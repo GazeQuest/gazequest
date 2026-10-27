@@ -1,246 +1,453 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101a13">
-<title>GazeQuest — Focus Lab</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d13">
+<title>GazeQuest | Reaction Training</title>
 <style>
-:root{color-scheme:dark;--accent:#a8e6b0;--accent-rgb:168,230,176;--bg:#0b120e;--line:#2b3b30;--muted:#9aa99d;--text:#eff7f0}
+:root{--a:#72f5a1;--rgb:114,245,161;--bg:#0b0d13;--panel:#151823;--line:#292e40;--muted:#a1a8bb;--text:#f4f6ff}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 80% -10%,rgba(var(--accent-rgb),.12),transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif;transition:background .4s}
-button{font:inherit;cursor:pointer}
-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.wrap{max-width:1160px;margin:auto;padding:22px 18px 46px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid #ffffff12;padding:4px 0 20px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border:1px solid rgba(var(--accent-rgb),.55);border-radius:14px;display:grid;place-items:center;color:var(--accent);font-size:25px;background:rgba(var(--accent-rgb),.07)}
-.brand strong{font-size:16px;letter-spacing:.16em}
-.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.17em;text-transform:uppercase}
-.tag{font-size:11px;color:var(--accent);border:1px solid rgba(var(--accent-rgb),.3);border-radius:99px;padding:7px 11px}
-.hero{padding:43px 0 27px;max-width:760px}
-.eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
-h1{font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-.06em;margin:12px 0 17px}
-h1 span{color:var(--accent)}
-.hero p{color:#b0bdb3;max-width:640px;margin:0}
-.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:16px;align-items:start}
-.panel{background:linear-gradient(145deg,#141f18f5,#0f1712f5);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 50px #0005}
-.panel-head{padding:17px 19px;border-bottom:1px solid #ffffff10;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.panel-head h2{font-size:13px;margin:0;letter-spacing:.05em}
-.muted{font-size:11px;color:var(--muted)}
-.pad{padding:19px}
-.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.level{min-height:78px;text-align:left;padding:12px;position:relative;overflow:hidden;border:1px solid #2c3930;background:#0c130f;color:#d1dbd3;border-radius:11px;transition:transform .2s,border-color .3s,background .3s,box-shadow .3s}
-.level:hover{transform:translateY(-3px)}
-.level b{display:block;font-size:11px}
-.level small{display:block;color:#829187;font-size:10px;margin-top:5px}
-.level.active{border-color:var(--accent);background:linear-gradient(145deg,rgba(var(--accent-rgb),.2),rgba(var(--accent-rgb),.05));box-shadow:inset 0 0 0 1px rgba(var(--accent-rgb),.18),0 7px 22px rgba(var(--accent-rgb),.1)}
-.level.active:after{content:"";position:absolute;right:-13px;top:-13px;width:34px;height:34px;border:1px solid rgba(var(--accent-rgb),.6);border-radius:50%;box-shadow:0 0 0 5px rgba(var(--accent-rgb),.07)}
-.level.active small{color:var(--accent)}
-.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:19px 0 12px}
-.mode{padding:11px 8px;border:1px solid var(--line);background:#0c130f;color:#bdc9bf;border-radius:10px;font-size:12px}
-.mode.active{color:var(--accent);border-color:rgba(var(--accent-rgb),.65);background:rgba(var(--accent-rgb),.08)}
-.notice{border:1px solid rgba(var(--accent-rgb),.24);background:rgba(var(--accent-rgb),.045);border-radius:12px;padding:13px 14px;color:#b9c7bd;font-size:12px}
-.notice strong{color:var(--text)}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
-.primary,.secondary{border-radius:10px;padding:12px 16px;font-weight:750}
-.primary{border:0;background:var(--accent);color:#101510;box-shadow:0 8px 24px rgba(var(--accent-rgb),.13)}
-.secondary{border:1px solid var(--line);background:#151f18;color:#d9e3db}
-.primary:disabled,.secondary:disabled{opacity:.45;cursor:not-allowed}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.stat{border:1px solid #ffffff10;background:#0b120e;border-radius:12px;padding:14px}
-.stat span{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}
-.stat strong{display:block;font-size:27px;letter-spacing:-.05em;margin-top:4px}
-.guide{margin-top:17px}
-.guide h3{font-size:13px;margin:0 0 11px}
-.steps{display:grid;gap:12px}
-.step{display:flex;gap:10px;color:#aebcb1;font-size:12px}
-.num{flex:0 0 25px;height:25px;display:grid;place-items:center;border:1px solid rgba(var(--accent-rgb),.45);border-radius:8px;color:var(--accent)}
-.step strong{display:block;color:#f0f7f1;font-size:12px;margin-bottom:2px}
-.game{margin-top:16px;border:1px solid #ffffff18;box-shadow:0 18px 55px #0006,inset 0 1px #ffffff08;transition:box-shadow .6s,border-color .6s}
-.game.is-running,.game.is-expanded{border-color:rgba(var(--accent-rgb),.5);box-shadow:0 24px 75px #0008,0 0 35px rgba(var(--accent-rgb),.12),inset 0 1px #ffffff10}
-.arena{height:340px;position:relative;overflow:hidden;touch-action:manipulation;border-radius:0 0 13px 13px;background:radial-gradient(ellipse at 50% 42%,rgba(var(--accent-rgb),.2),#090e0cee 72%),linear-gradient(145deg,#ffffff08,transparent 45%);transition:height .95s cubic-bezier(.16,1,.3,1),background .45s,box-shadow .65s,border-radius .65s}
-.game.is-running .arena,.game.is-expanded .arena{height:clamp(470px,70vh,760px);box-shadow:inset 0 0 70px rgba(var(--accent-rgb),.13),inset 0 0 0 1px rgba(var(--accent-rgb),.13)}
-.arena-controls{display:flex;align-items:center;gap:8px}
-.expand-btn{border:1px solid rgba(var(--accent-rgb),.35);background:rgba(var(--accent-rgb),.08);color:var(--accent);border-radius:10px;padding:7px 10px;font-size:11px;font-weight:750;white-space:nowrap;transition:background .25s,transform .25s,box-shadow .25s}
-.expand-btn:hover{background:rgba(var(--accent-rgb),.16);transform:translateY(-1px);box-shadow:0 5px 18px rgba(var(--accent-rgb),.1)}
-.arena:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(transparent,#000,transparent);pointer-events:none}
-.game.is-running .arena:before{background-size:24px 24px;animation:gridDrift 18s linear infinite}
-@keyframes gridDrift{to{background-position:48px 48px,-48px -48px}}
-.arena-label{position:absolute;left:14px;top:12px;color:#819187;font-size:9px;letter-spacing:.17em;pointer-events:none}
-.arena-message{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:25px;color:#a6b5aa;font-size:12px;pointer-events:none}
-.arena-message strong{display:block;color:#f0f7f1;font-size:17px;margin-bottom:6px}
-.target{-webkit-tap-highlight-color:transparent;outline:none;appearance:none;-webkit-appearance:none;position:absolute;left:50%;top:50%;width:25px;height:25px;transform:translate(-50%,-50%);border:0;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(var(--accent-rgb),.12),0 0 22px rgba(var(--accent-rgb),.48),0 0 42px rgba(var(--accent-rgb),.13),inset 0 0 8px #ffffffa8;display:none;transition:left var(--move-duration,700ms) cubic-bezier(.22,.72,.2,1),top var(--move-duration,700ms) cubic-bezier(.22,.72,.2,1),width .35s,height .35s,opacity .18s,filter .18s;will-change:left,top,transform;animation:targetGlow 2.8s ease-in-out infinite;padding:0}
-.target:focus,.target:focus-visible,.target:active{outline:none}
-@keyframes targetGlow{0%,100%{filter:brightness(1);box-shadow:0 0 0 5px rgba(var(--accent-rgb),.1),0 0 15px rgba(var(--accent-rgb),.42),inset 0 0 7px #ffffff85}50%{filter:brightness(1.12);box-shadow:0 0 0 8px rgba(var(--accent-rgb),.08),0 0 23px rgba(var(--accent-rgb),.62),inset 0 0 8px #fff}}
-.target.pop{animation:targetPop .32s cubic-bezier(.16,1,.3,1) forwards;pointer-events:none}
-.hit-burst{position:absolute;left:var(--burst-x);top:var(--burst-y);width:12px;height:12px;border-radius:50%;pointer-events:none;z-index:5;transform:translate(-50%,-50%);animation:burstCore .36s ease-out forwards}
-.hit-burst:before,.hit-burst:after{content:"";position:absolute;inset:-5px;border:2px solid var(--accent);border-radius:50%;animation:burstRing .42s cubic-bezier(.16,1,.3,1) forwards}
-.hit-burst:after{inset:-2px;border-color:#fff;animation-delay:.035s}
-@keyframes burstCore{0%{opacity:1;transform:translate(-50%,-50%) scale(.3);background:#fff;box-shadow:0 0 12px 5px var(--accent)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.4);background:var(--accent);box-shadow:0 0 24px 9px rgba(var(--accent-rgb),.1)}}
-@keyframes burstRing{0%{opacity:.95;transform:scale(.25)}100%{opacity:0;transform:scale(4.2)}}
-@keyframes targetPop{0%{transform:translate(-50%,-50%) scale(1);opacity:1}45%{transform:translate(-50%,-50%) scale(1.75);opacity:.8;filter:brightness(1.8)}100%{transform:translate(-50%,-50%) scale(.2);opacity:0;filter:brightness(2)}}
-.target:before{content:"";position:absolute;inset:-8px;border:1px solid rgba(var(--accent-rgb),.7);border-radius:50%;pointer-events:none}
-.target:after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;background:white;inset:0;margin:auto;pointer-events:none}
-.hud{display:flex;justify-content:space-between;gap:8px;padding:14px 16px;border-top:1px solid rgba(var(--accent-rgb),.17);background:linear-gradient(180deg,rgba(var(--accent-rgb),.055),#ffffff03);color:var(--muted);font-size:11px}
-.hud strong{color:var(--text)}
-.bar{height:3px;background:#202b23}
-.bar span{display:block;height:100%;width:100%;background:var(--accent);transition:width .08s linear}
-.result{display:none;padding:17px;border-top:1px solid #ffffff10}
-.result h3{margin:0 0 4px;font-size:15px}
-.result p{margin:0;color:var(--muted);font-size:12px}
-.foot{text-align:center;color:#748278;font-size:11px;margin-top:23px}
-@media(max-width:760px){.layout{grid-template-columns:1fr}.levels{grid-template-columns:repeat(2,minmax(0,1fr))}.arena{height:300px}.wrap{padding-inline:13px}.hero{padding-top:31px}.side-panel{order:2}}
-@media(max-width:420px){.wrap{padding-inline:10px}.pad{padding:13px}.level{padding:10px;min-height:72px}.level b{font-size:10px}.level small{font-size:9px}.hud{font-size:9px;padding-inline:10px}.stat strong{font-size:23px}.tag{display:none}.panel-head{padding:13px}.arena-controls{gap:5px}.expand-btn{padding:6px;font-size:10px}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,rgba(var(--rgb),.13),transparent 55%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+.logo{font-size:23px;font-weight:950;letter-spacing:-1px}
+.logo span,h1 span{color:var(--a)}
+nav{display:flex;gap:20px}
+nav a{color:var(--muted);text-decoration:none}
+nav a:hover{color:var(--a)}
+.hero{text-align:center;padding:48px 0 30px}
+.eyebrow{font-size:11px;letter-spacing:2px;font-weight:850;color:var(--a)}
+h1{font-size:clamp(38px,7vw,66px);line-height:1.03;letter-spacing:-2.5px;margin:12px 0}
+.hero p{max-width:620px;margin:auto;color:var(--muted)}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px;align-items:start}
+.panel{min-width:0;background:linear-gradient(145deg,#ffffff08,transparent 60%),var(--panel);border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:0 14px 45px #0002}
+h2,h3{margin:0 0 14px;letter-spacing:-.4px}
+.label{display:block;font-size:12px;color:var(--muted);font-weight:750;margin:15px 0 7px}
+.field{width:100%;background:#0d1018;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px;outline:none}
+.field:focus,button:focus-visible{outline:2px solid var(--a);outline-offset:3px}
+.btn{background:#222636;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-weight:750;transition:.18s}
+.btn:hover{border-color:var(--a);transform:translateY(-1px)}
+.btn.primary{background:var(--a);color:#10151a;border-color:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.statrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:15px}
+.stat{text-align:center;padding:10px 3px;border:1px solid var(--line);border-radius:11px;background:#0d1018}
+.stat strong{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:10px}
+.note{font-size:12px;color:var(--muted)}
+.arena{height:470px;position:relative;overflow:hidden;border-radius:15px;border:1px solid rgba(var(--rgb),.35);background:radial-gradient(ellipse,rgba(var(--rgb),.07),transparent 70%),#0b0e15;isolation:isolate;touch-action:manipulation}
+.arena:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:32px 32px}
+.target{position:absolute;z-index:2;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%);border:2px solid white;border-radius:50%;background:var(--a);box-shadow:0 0 14px rgba(var(--rgb),.95),0 0 38px rgba(var(--rgb),.55);padding:0}
+.target:after{content:"";position:absolute;inset:-8px;border:1px solid rgba(var(--rgb),.65);border-radius:50%;animation:pulse 1.4s ease-out infinite}
+.target[hidden]{display:none}
+@keyframes pulse{to{transform:scale(1.7);opacity:0}}
+.burst{position:absolute;z-index:4;pointer-events:none;width:15px;height:15px;border:2px solid var(--a);border-radius:50%;transform:translate(-50%,-50%);animation:boom .4s ease-out forwards}
+@keyframes boom{to{width:90px;height:90px;opacity:0}}
+.arena-status{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-top:10px}
+.tag{font-size:11px;color:var(--a);border:1px solid var(--line);padding:4px 9px;border-radius:99px}
+.section{margin-top:30px}
+.sectionhead{margin-bottom:15px}
+.sectionhead h2{font-size:28px;margin:4px 0}
+.sectionhead p{margin:0;color:var(--muted)}
+.reviewgrid{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px}
+.bigavg{font-size:43px;font-weight:900;line-height:1.2}
+.stars{display:flex;gap:5px;margin:12px 0}
+.star{background:transparent;border:0;padding:0 2px;color:#50566a;font-size:32px;line-height:1}
+.star.active,.star:hover{color:#ffd166}
+.barrow{display:grid;grid-template-columns:24px 1fr 25px;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin:8px 0}
+.bar{height:7px;background:#292e3e;border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:#ffd166;border-radius:10px}
+.comment{padding:14px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.comment:first-child{border-top:0}
+.commenttop{display:flex;justify-content:space-between;gap:8px}
+.commentname{font-weight:800}
+.commentstars{color:#ffd166;white-space:nowrap}
+.comment p{white-space:pre-wrap;color:#c8ccda;margin:6px 0}
+.comment time{font-size:11px;color:var(--muted)}
+.empty{padding:20px 0;color:var(--muted)}
+footer{margin-top:35px;padding:23px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hidden{display:none!important}
+#app.full{width:calc(100% - 24px);max-width:none}
+#app.full .layout{grid-template-columns:minmax(0,1fr)}
+#app.full .arena{height:76vh;min-height:420px}
+#app.full .arena-panel{width:100%}
+#app.full .controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#app.full .controls h2{grid-column:1/-1}
+#app.full .controls .label{margin-top:0}
+@media(max-width:780px){
+ .wrap{width:calc(100% - 20px)}
+ .layout,.reviewgrid{grid-template-columns:1fr}
+ .arena{height:360px}
+ .hero{padding-top:35px}
+ .panel{padding:15px}
+ #app.full .arena{height:70vh;min-height:360px}
+ #app.full .controls{grid-template-columns:1fr}
+}
+@media(max-width:430px){
+ nav{gap:11px;font-size:12px}
+ .arena{height:315px}
+ h1{letter-spacing:-1.5px}
+ .stat strong{font-size:20px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header class="top"><div class="brand"><div class="logo">◎</div><div><strong>GAZEQUEST</strong><small>FOCUS LAB / REACTION TRAINING</small></div></div><div class="tag">TRAIN YOUR FOCUS</div></header>
-<section class="hero"><div class="eyebrow">01 — Focus &amp; reaction</div><h1>Encuentra tu <span>enfoque.</span></h1><p>Elige tu nivel, aprende las reglas y supera tu marca. Ocho dificultades cambian el color, el tamaño del objetivo y el ritmo. Extremo+ es intenso; IMPOSIBLE es el desafío final.</p></section>
-<div class="layout"><main>
-<section class="panel"><div class="panel-head"><h2>SELECCIONA TU DIFICULTAD</h2><span class="muted">8 niveles</span></div><div class="pad"><div class="levels" id="levels"></div>
-<div class="mode-row"><button class="mode active" data-mode="click">◎ Reacción con clic</button><button class="mode" data-mode="gaze">◉ Seguimiento visual</button></div>
-<div class="notice" id="modeNotice"><strong>Cómo jugar:</strong> pulsa o toca la bola cada vez que aparezca. Cada acierto suma puntos. Tienes 30 segundos.</div>
-<div class="actions"><button class="primary" id="start">Empezar ronda ↗</button><button class="secondary" id="stop" disabled>Parar ronda ■</button><button class="secondary" id="reset">Restablecer</button></div></div></section>
-<section class="panel game" id="gamePanel"><div class="panel-head"><h2>CAMPO DE PRUEBAS</h2><div class="arena-controls"><span class="muted" id="difficultyLabel">Nivel 1 · Muy fácil</span><button class="expand-btn" id="expandArena" type="button" aria-pressed="false">⤢ Ampliar campo</button></div></div>
-<div class="arena" id="arena"><div class="arena-label">GAZEQUEST / TRAINING FIELD</div><div class="arena-message" id="message"><div><strong>Tu ronda empieza aquí</strong>Selecciona una dificultad y pulsa «Empezar ronda».</div></div><button class="target" id="target" aria-label="Toca la bola objetivo"></button></div>
-<div class="bar"><span id="timebar"></span></div><div class="hud"><span>TIEMPO <strong id="time">30.0 s</strong></span><span>ACIERTOS <strong id="hits">0</strong></span><span>PUNTOS <strong id="score">0</strong></span></div>
-<div class="result" id="result"><h3 id="resultTitle">Ronda terminada</h3><p id="resultText"></p></div></section>
-</main><aside class="side-panel"><section class="panel"><div class="panel-head"><h2>TU RENDIMIENTO</h2><span class="muted">En este dispositivo</span></div><div class="pad"><div class="stats"><div class="stat"><span>RÉCORD DEL NIVEL</span><strong id="best">0</strong></div><div class="stat"><span>RONDAS JUGADAS</span><strong id="sessions">0</strong></div></div>
-<div class="guide"><h3>Cómo jugar</h3><div class="steps"><div class="step"><span class="num">1</span><div><strong>Elige una dificultad</strong>Los ocho niveles aumentan el reto y cambian el color de la interfaz.</div></div><div class="step"><span class="num">2</span><div><strong>Persigue el objetivo</strong>En Reacción, toca la bola. En Seguimiento visual, síguela solo con la mirada.</div></div><div class="step"><span class="num">3</span><div><strong>Supera tu marca</strong>Acumula puntos durante 30 segundos y bate tu récord.</div></div></div></div>
-<div class="guide notice"><strong>Nota:</strong> el modo Seguimiento visual es una práctica guiada, no una medición ocular. Esta página no accede a la cámara ni detecta tus ojos.</div></div></section></aside></div>
-<footer class="foot">GAZEQUEST · Experiencia de reacción y seguimiento visual. No es una prueba médica.</footer>
+<div class="wrap" id="app">
+<header>
+ <div class="logo">Gaze<span>Quest</span></div>
+ <nav><a href="#training">Entrenar</a><a href="#reviews">Reseñas</a></nav>
+</header>
+
+<section class="hero">
+ <div class="eyebrow">FOCUS · TRACK · REACT</div>
+ <h1>Entrena tu <span>precisión.</span></h1>
+ <p>Mejora tus reflejos con objetivos dinámicos, patrones diferentes y ocho niveles de dificultad.</p>
+</section>
+
+<main class="layout" id="training">
+<aside class="panel controls">
+ <h2>Tu sesión</h2>
+ <label class="label" for="difficulty">Dificultad</label>
+ <select class="field" id="difficulty">
+  <option value="0">1 · Muy fácil</option>
+  <option value="1">2 · Fácil</option>
+  <option value="2" selected>3 · Normal</option>
+  <option value="3">4 · Difícil</option>
+  <option value="4">5 · Muy difícil</option>
+  <option value="5">6 · Extremo</option>
+  <option value="6">7 · Extremo+</option>
+  <option value="7">8 · IMPOSIBLE</option>
+ </select>
+ <label class="label" for="pattern">Patrones</label>
+ <select class="field" id="pattern">
+  <option value="random">Mezcla aleatoria</option>
+  <option value="wave">Ondas</option>
+  <option value="zigzag">Zigzag</option>
+  <option value="diagonal">Diagonales</option>
+  <option value="circle">Órbitas</option>
+  <option value="corners">Esquinas</option>
+  <option value="figure8">Figura de ocho</option>
+ </select>
+ <div class="btnrow">
+  <button class="btn primary" id="start">▶ Empezar ronda</button>
+  <button class="btn" id="stop">■ Parar</button>
+ </div>
+ <div class="statrow">
+  <div class="stat"><strong id="time">30</strong><small>SEGUNDOS</small></div>
+  <div class="stat"><strong id="score">0</strong><small>PUNTOS</small></div>
+  <div class="stat"><strong id="hits">0</strong><small>ACIERTOS</small></div>
+ </div>
+ <p class="note" id="roundNote">Cada ronda combina movimientos de forma diferente.</p>
+</aside>
+
+<section class="panel arena-panel">
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px">
+  <h2 style="margin:0">Zona de reacción</h2>
+  <button class="btn" id="expand" aria-pressed="false">⛶ Ampliar</button>
+ </div>
+ <div class="arena" id="arena">
+  <button class="target" id="target" aria-label="Pulsa el objetivo" hidden></button>
+  <div id="ready" style="position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:var(--muted);padding:25px;pointer-events:none">
+   <strong style="color:var(--a)">¿Listo para entrenar?</strong>
+   <span>Empieza una ronda para mover el objetivo.</span>
+  </div>
+ </div>
+ <div class="arena-status"><span id="state">En espera</span><span id="patternNow">Patrón: —</span></div>
+</section>
+</main>
+
+<section class="section" id="reviews">
+ <div class="sectionhead">
+  <div class="eyebrow">COMUNIDAD</div>
+  <h2>Reseñas y sugerencias</h2>
+  <p>Valora la experiencia y comparte ideas para mejorar GazeQuest.</p>
+ </div>
+ <div class="reviewgrid">
+  <div class="panel">
+   <h3>Valora la web</h3>
+   <div class="bigavg" id="avg">— <span style="font-size:15px;color:var(--muted)">/ 5</span></div>
+   <div class="stars" id="starPicker" aria-label="Elige una puntuación">
+    <button class="star" data-star="1" aria-label="1 estrella">★</button>
+    <button class="star" data-star="2" aria-label="2 estrellas">★</button>
+    <button class="star" data-star="3" aria-label="3 estrellas">★</button>
+    <button class="star" data-star="4" aria-label="4 estrellas">★</button>
+    <button class="star" data-star="5" aria-label="5 estrellas">★</button>
+   </div>
+   <div id="ratingLabel" class="note">Selecciona de 1 a 5 estrellas.</div>
+   <div id="distribution"></div>
+   <p id="voteStatus" class="note">Aún no hay valoraciones.</p>
+   <label class="label" for="reviewName">Alias (opcional)</label>
+   <input class="field" id="reviewName" maxlength="32" placeholder="Tu nombre público">
+   <label class="label" for="reviewText">Comentario o sugerencia</label>
+   <textarea class="field" id="reviewText" maxlength="500" rows="4" placeholder="¿Qué te gusta o qué mejorarías?"></textarea>
+   <button class="btn primary" id="sendReview" style="width:100%;margin-top:12px">Publicar reseña</button>
+   <p class="note" id="reviewNotice">Las reseñas locales solo se guardan en este navegador hasta conectar la base de datos.</p>
+  </div>
+  <div class="panel">
+   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+    <h3 style="margin:0">Opiniones recientes</h3>
+    <span class="tag" id="liveTag">LOCAL</span>
+   </div>
+   <div id="comments"><div class="empty">Todavía no hay comentarios.</div></div>
+  </div>
+ </div>
+</section>
+
+<footer>
+ <span>GazeQuest · Entrena. Repite. Mejora.</span>
+ <span>Juego de clics y reflejos; no utiliza seguimiento ocular real.</span>
+</footer>
 </div>
+
 <script>
-const levels=[
-{name:'Muy fácil',tag:'Calmado',color:'#a8e6b0',rgb:'168,230,176',bg:'#0b120e',gap:1400,size:30},
-{name:'Fácil',tag:'Ligero',color:'#c4e78a',rgb:'196,231,138',bg:'#11140b',gap:1120,size:27},
-{name:'Normal',tag:'Constante',color:'#f0bd69',rgb:'240,189,105',bg:'#171109',gap:850,size:23},
-{name:'Difícil',tag:'Rápido',color:'#f39b55',rgb:'243,155,85',bg:'#1a100b',gap:600,size:20},
-{name:'Muy difícil',tag:'Intenso',color:'#f16e55',rgb:'241,110,85',bg:'#1a0d0d',gap:430,size:17},
-{name:'Extremo',tag:'Brutal',color:'#ed4b57',rgb:'237,75,87',bg:'#1b090e',gap:300,size:15},
-{name:'Extremo+',tag:'Intenso',color:'#ff263f',rgb:'255,38,63',bg:'#19050b',gap:260,size:15},
-{name:'IMPOSIBLE',tag:'Zona púrpura',color:'#a64bba',rgb:'166,75,186',bg:'#160914',gap:230,size:14}
+/*
+ACTIVAR RESEÑAS PÚBLICAS EN TIEMPO REAL:
+1. Crea un proyecto en supabase.com.
+2. Abre SQL Editor y ejecuta el SQL que está al final de este archivo.
+3. En Project Settings > API copia Project URL y la clave publishable/anon.
+4. Pega esos dos valores en SUPABASE_URL y SUPABASE_ANON_KEY.
+No uses nunca la service_role key en una web pública.
+*/
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";
+
+const $ = id => document.getElementById(id);
+const levels = [
+ {name:"Muy fácil",c:"#72f5a1",rgb:"114,245,161",speed:.65,size:43},
+ {name:"Fácil",c:"#b5f477",rgb:"181,244,119",speed:.85,size:39},
+ {name:"Normal",c:"#f5d35e",rgb:"245,211,94",speed:1,size:35},
+ {name:"Difícil",c:"#ffad5a",rgb:"255,173,90",speed:1.2,size:31},
+ {name:"Muy difícil",c:"#ff8158",rgb:"255,129,88",speed:1.45,size:28},
+ {name:"Extremo",c:"#ff5057",rgb:"255,80,87",speed:1.7,size:26},
+ {name:"Extremo+",c:"#db334d",rgb:"219,51,77",speed:1.95,size:24},
+ {name:"IMPOSIBLE",c:"#b72c91",rgb:"183,44,145",speed:2.2,size:22}
 ];
-let level=0,mode='click',running=false,hits=0,score=0,timeLeft=30,startedAt=0,timer=null,mover=null,sessions=Number(localStorage.gqSessions||0);
-const $=id=>document.getElementById(id);
-function applyTheme(){
-const l=levels[level];
-document.documentElement.style.setProperty('--accent',l.color);
-document.documentElement.style.setProperty('--accent-rgb',l.rgb);
-document.documentElement.style.setProperty('--bg',l.bg);
-document.querySelector('meta[name="theme-color"]').content=l.bg;
-$('difficultyLabel').textContent=`Nivel ${level+1} · ${l.name}`;
-document.querySelectorAll('.level').forEach((b,i)=>b.classList.toggle('active',i===level));
-$('best').textContent=localStorage['gqBest'+level]||0;
+const patternNames={wave:"Ondas",zigzag:"Zigzag",diagonal:"Diagonales",circle:"Órbitas",corners:"Esquinas",figure8:"Figura de ocho"};
+let running=false,raf=0,started=0,score=0,hits=0,seq=[],seg=-1,px=.5,py=.5;
+let selectedStars=0,db=null,liveChannel=null;
+let localReviews=[];
+try{localReviews=JSON.parse(localStorage.getItem("gq_reviews")||"[]")}catch(e){localReviews=[]}
+
+function theme(){
+ const l=levels[+$("difficulty").value];
+ document.documentElement.style.setProperty("--a",l.c);
+ document.documentElement.style.setProperty("--rgb",l.rgb);
+ $("target").style.width=l.size+"px";
+ $("target").style.height=l.size+"px";
 }
-levels.forEach((l,i)=>{
-const b=document.createElement('button');
-b.className='level';
-b.innerHTML=`<b>${String(i+1).padStart(2,'0')} · ${l.name}</b><small>${l.tag}</small>`;
-b.onclick=()=>{if(running)return;level=i;applyTheme();reset()};
-$('levels').appendChild(b);
+$("difficulty").addEventListener("change",theme);
+theme();
+
+function makeSequence(){
+ const chosen=$("pattern").value;
+ let pool=chosen==="random"?Object.keys(patternNames):[chosen];
+ const out=[];
+ for(let i=0;i<12;i++){
+  let p=pool[Math.floor(Math.random()*pool.length)];
+  if(pool.length>1&&p===out[out.length-1]){
+   const choices=pool.filter(x=>x!==p);
+   p=choices[Math.floor(Math.random()*choices.length)];
+  }
+  out.push(p);
+ }
+ return out;
+}
+function pointAt(p,t,i){
+ let x=.5,y=.5;
+ switch(p){
+  case "wave":
+   x=.5+.42*Math.sin(t*1.6+i*.9);
+   y=.5+.36*Math.sin(t*2.1+i*.65);
+   break;
+  case "zigzag":
+   x=.08+.84*Math.abs(((t*.8+i*.37)%2)-1);
+   y=.1+.8*Math.abs(((t*.58+i*.29)%2)-1);
+   break;
+  case "diagonal":{
+   let q=(t*.42+i*.23)%2;q=q<1?q:2-q;
+   x=.08+.84*q;y=.1+.8*(1-q);
+   break;
+  }
+  case "circle":
+   x=.5+.39*Math.cos(t*1.25+i*.85);
+   y=.5+.39*Math.sin(t*1.25+i*.85);
+   break;
+  case "corners":{
+   const pts=[[.12,.13],[.87,.14],[.86,.86],[.13,.85]];
+   let q=(t*.48+i*.7)%4,k=Math.floor(q),f=q-k;
+   x=pts[k][0]+(pts[(k+1)%4][0]-pts[k][0])*f;
+   y=pts[k][1]+(pts[(k+1)%4][1]-pts[k][1])*f;
+   break;
+  }
+  case "figure8":
+   x=.5+.39*Math.sin(t*1.1+i*.75);
+   y=.5+.31*Math.sin(2*(t*1.1+i*.75));
+   break;
+ }
+ return [Math.max(.07,Math.min(.93,x)),Math.max(.09,Math.min(.91,y))];
+}
+function burst(x,y){
+ const b=document.createElement("i");
+ b.className="burst";b.style.left=x+"px";b.style.top=y+"px";
+ $("arena").appendChild(b);setTimeout(()=>b.remove(),450);
+}
+function stopRound(){
+ running=false;cancelAnimationFrame(raf);$("target").hidden=true;
+ $("state").textContent="En espera";
+}
+function startRound(){
+ stopRound();running=true;score=0;hits=0;seg=-1;px=.5;py=.5;
+ seq=makeSequence();started=performance.now();
+ $("score").textContent="0";$("hits").textContent="0";$("time").textContent="30";
+ $("target").hidden=false;$("ready").classList.add("hidden");
+ $("state").textContent="Ronda en curso";
+ $("roundNote").textContent="Patrones de esta ronda: "+seq.slice(0,5).map(x=>patternNames[x]).join(" → ")+"…";
+ raf=requestAnimationFrame(frame);
+}
+function frame(now){
+ if(!running)return;
+ const elapsed=(now-started)/1000;
+ if(elapsed>=30){
+  stopRound();$("state").textContent="Ronda terminada";
+  $("ready").classList.remove("hidden");
+  $("ready").innerHTML="<div><strong style='color:var(--a);font-size:22px'>¡Ronda completada!</strong><br>"+score+" puntos · "+hits+" aciertos<br><small>Empieza otra ronda para probar una combinación diferente.</small></div>";
+  return;
+ }
+ $("time").textContent=Math.ceil(30-elapsed);
+ const difficulty=+$("difficulty").value;
+ const segmentDuration=Math.max(1.7,5.4-difficulty*.42);
+ const current=Math.floor(elapsed/segmentDuration);
+ if(current!==seg){
+  seg=current;
+  if(seg>0&&Math.random()<.55){
+   // Cada transición puede cambiar el orden de los movimientos.
+   seq.push(seq[Math.floor(Math.random()*seq.length)]);
+  }
+ }
+ const p=seq[seg%seq.length];
+ const t=elapsed%segmentDuration;
+ const [x,y]=pointAt(p,t,seg);
+ const r=$("arena").getBoundingClientRect();
+ // Movimiento continuo y suave, más ágil en los niveles altos.
+ const follow=Math.min(.25,.055+levels[difficulty].speed*.045);
+ px+=(x-px)*follow;py+=(y-py)*follow;
+ $("target").style.left=(px*r.width)+"px";
+ $("target").style.top=(py*r.height)+"px";
+ $("patternNow").textContent="Patrón: "+patternNames[p];
+ raf=requestAnimationFrame(frame);
+}
+$("start").addEventListener("click",startRound);
+$("stop").addEventListener("click",()=>{
+ stopRound();$("ready").classList.remove("hidden");
+ $("ready").textContent="Ronda detenida. Pulsa Empezar ronda para volver a jugar.";
 });
-document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{
-if(running)return;
-mode=b.dataset.mode;
-document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('active',x===b));
-$('modeNotice').innerHTML=mode==='click'
-?'<strong>Cómo jugar:</strong> pulsa o toca la bola cada vez que aparezca. Cada acierto suma puntos durante 30 segundos.'
-:'<strong>Cómo practicar:</strong> sigue la bola con los ojos durante 30 segundos. Esta página no mide ni registra tus ojos.';
+$("target").addEventListener("click",e=>{
+ if(!running)return;
+ e.stopPropagation();
+ const r=$("arena").getBoundingClientRect();
+ const x=parseFloat($("target").style.left),y=parseFloat($("target").style.top);
+ burst(x,y);hits++;
+ score+=Math.max(5,Math.round(100/(1+hits*.025)));
+ $("hits").textContent=hits;$("score").textContent=score;
+ // Cambia ligeramente la trayectoria al acertar sin teletransportes constantes.
+ px=Math.max(.08,Math.min(.92,px+(Math.random()-.5)*.18));
+ py=Math.max(.1,Math.min(.9,py+(Math.random()-.5)*.18));
+ $("target").style.left=px*r.width+"px";$("target").style.top=py*r.height+"px";
 });
-function place(){
-const a=$('arena'),t=$('target'),r=a.getBoundingClientRect(),l=levels[level];
-const pad=Math.max(24,l.size+12);
-const x=pad+Math.random()*Math.max(1,r.width-pad*2);
-const y=pad+Math.random()*Math.max(1,r.height-pad*2);
-t.style.setProperty('--move-duration',Math.max(180,l.gap*.72)+'ms');
-t.style.left=x+'px';t.style.top=y+'px';
-t.style.width=l.size+'px';t.style.height=l.size+'px';
+$("expand").addEventListener("click",()=>{
+ const full=$("app").classList.toggle("full");
+ $("expand").textContent=full?"⤢ Reducir":"⛶ Ampliar";
+ $("expand").setAttribute("aria-pressed",String(full));
+ setTimeout(()=>{
+  if(running){
+   const r=$("arena").getBoundingClientRect();
+   $("target").style.left=px*r.width+"px";$("target").style.top=py*r.height+"px";
+  }
+ },350);
+});
+
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-function schedule(){
-if(!running)return;
-const t=$('target');
-t.classList.remove('pop');
-place();
-t.style.display='block';t.style.opacity='1';t.style.pointerEvents='auto';
-mover=setTimeout(schedule,Math.max(240,levels[level].gap));
+function renderReviews(rows){
+ const n=rows.length;
+ const avg=n?rows.reduce((sum,r)=>sum+Number(r.rating),0)/n:0;
+ $("avg").innerHTML=(n?avg.toFixed(1):"—")+' <span style="font-size:15px;color:var(--muted)">/ 5</span>';
+ $("distribution").innerHTML=[5,4,3,2,1].map(k=>{
+  const count=rows.filter(r=>+r.rating===k).length;
+  return `<div class="barrow"><span>${k}★</span><div class="bar"><i style="width:${n?count/n*100:0}%"></i></div><span>${count}</span></div>`;
+ }).join("");
+ $("voteStatus").textContent=n?`${n} valoración${n===1?"":"es"}`:"Aún no hay valoraciones.";
+ $("comments").innerHTML=n?rows.slice(0,100).map(r=>{
+  const date=r.created_at||r.date||new Date().toISOString();
+  const name=r.display_name||r.name||"Visitante";
+  const comment=r.comment??r.text??"";
+  return `<article class="comment"><div class="commenttop"><span class="commentname">${escapeHTML(name)}</span><span class="commentstars">${"★".repeat(+r.rating)}${"☆".repeat(5-(+r.rating))}</span></div><p>${escapeHTML(comment)}</p><time>${escapeHTML(new Date(date).toLocaleString("es-ES"))}</time></article>`;
+ }).join(""):'<div class="empty">Todavía no hay comentarios.</div>';
 }
-$('target').onclick=()=>{
-if(!running||mode!=='click')return;
-hits++;score=Math.min(1000,score+Math.max(5,25-level*2));
-$('hits').textContent=hits;$('score').textContent=score;
-const t=$('target'),arena=$('arena'),ar=arena.getBoundingClientRect(),tr=t.getBoundingClientRect();
-const burst=document.createElement('span');
-burst.className='hit-burst';
-burst.style.setProperty('--burst-x',(tr.left+tr.width/2-ar.left)+'px');
-burst.style.setProperty('--burst-y',(tr.top+tr.height/2-ar.top)+'px');
-arena.appendChild(burst);
-burst.addEventListener('animationend',()=>burst.remove(),{once:true});
-clearTimeout(mover);
-t.classList.remove('pop');void t.offsetWidth;t.classList.add('pop');t.style.pointerEvents='none';
-mover=setTimeout(()=>{if(!running)return;t.classList.remove('pop');t.style.display='block';t.style.opacity='1';t.style.pointerEvents='auto';place();mover=setTimeout(schedule,Math.max(260,levels[level].gap));},230);
-};
-function start(){
-if(running)return;
-running=true;hits=0;score=0;startedAt=Date.now();
-$('hits').textContent='0';$('score').textContent='0';$('time').textContent='30.0 s';
-$('result').style.display='none';$('message').style.display='none';
-$('start').disabled=true;$('stop').disabled=false;$('reset').disabled=true;
-$('timebar').style.width='100%';
-$('gamePanel').classList.add('is-running');
-schedule();
-timer=setInterval(()=>{
-timeLeft=Math.max(0,30-(Date.now()-startedAt)/1000);
-$('time').textContent=timeLeft.toFixed(1)+' s';
-$('timebar').style.width=(timeLeft/30*100)+'%';
-if(timeLeft<=0)finish(false);
-},50);
+document.querySelectorAll("[data-star]").forEach(b=>b.addEventListener("click",()=>{
+ selectedStars=+b.dataset.star;
+ document.querySelectorAll("[data-star]").forEach(s=>s.classList.toggle("active",+s.dataset.star<=selectedStars));
+ $("ratingLabel").textContent=selectedStars+" de 5 estrellas";
+}));
+$("sendReview").addEventListener("click",async()=>{
+ if(!selectedStars){$("reviewNotice").textContent="Selecciona primero las estrellas.";return}
+ const comment=$("reviewText").value.trim();
+ const name=$("reviewName").value.trim().slice(0,32)||"Visitante";
+ if(!comment){$("reviewNotice").textContent="Escribe un comentario o sugerencia antes de publicar.";return}
+ if(comment.length>500)return;
+ $("sendReview").disabled=true;
+ const review={rating:selectedStars,comment,display_name:name,created_at:new Date().toISOString()};
+ try{
+  if(db){
+   const {error}=await db.from("reviews").insert({rating:review.rating,comment:review.comment,display_name:review.display_name});
+   if(error)throw error;
+   $("reviewNotice").textContent="Reseña publicada para la comunidad.";
+   $("reviewText").value="";
+   await loadPublicReviews();
+  }else{
+   localReviews.unshift(review);
+   localStorage.setItem("gq_reviews",JSON.stringify(localReviews));
+   renderReviews(localReviews);
+   $("reviewText").value="";
+   $("reviewNotice").textContent="Guardada en este navegador. Configura Supabase para compartirla con todos.";
+  }
+ }catch(err){
+  $("reviewNotice").textContent="No se pudo publicar. Comprueba la configuración de Supabase.";
+ }finally{$("sendReview").disabled=false}
+});
+renderReviews(localReviews);
+
+async function connectDatabase(){
+ if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
+ try{
+  const lib=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+  db=lib.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  await loadPublicReviews();
+  $("liveTag").textContent="EN VIVO";
+  $("reviewNotice").textContent="Reseñas públicas conectadas.";
+  liveChannel=db.channel("gazequest-reviews")
+   .on("postgres_changes",{event:"*",schema:"public",table:"reviews"},()=>loadPublicReviews())
+   .subscribe();
+ }catch(e){
+  $("reviewNotice").textContent="No se pudo conectar. Revisa la URL, la clave y las políticas de Supabase.";
+ }
 }
-function finish(manual=false){
-if(!running)return;
-running=false;clearInterval(timer);clearTimeout(mover);
-$('target').style.display='none';$('target').classList.remove('pop');
-$('start').disabled=false;$('stop').disabled=true;$('reset').disabled=false;
-$('gamePanel').classList.remove('is-running');
-$('message').style.display='grid';
-$('message').innerHTML=`<div><strong>${manual?'Ronda detenida':'Ronda completada'}</strong>${manual?'Has detenido la ronda.':'Revisa tu resultado y prueba otro nivel.'}</div>`;
-sessions++;localStorage.gqSessions=sessions;$('sessions').textContent=sessions;
-if(mode==='click'){
-let best=Number(localStorage['gqBest'+level]||0);
-if(score>best){localStorage['gqBest'+level]=score;best=score;}
-$('best').textContent=best;
-$('resultTitle').textContent=`${manual?'Ronda detenida':'Ronda completada'} · ${score}/1000`;
-$('resultText').textContent=`${hits} aciertos. Récord de ${levels[level].name}: ${best} puntos.`;
-}else{
-$('resultTitle').textContent=manual?'Práctica detenida':'Práctica visual completada';
-$('resultText').textContent='Has practicado el seguimiento visual. No se ha medido ni puntuado la mirada.';
+async function loadPublicReviews(){
+ if(!db)return;
+ const {data,error}=await db.from("reviews").select("id,rating,comment,display_name,created_at").order("created_at",{ascending:false}).limit(500);
+ if(error)throw error;
+ const rows=data||[];
+ // Se usa la misma colección para calcular la media y mostrar los comentarios.
+ renderReviews(rows);
+ $("voteStatus").textContent=rows.length?`${rows.length} reseñas públicas · sincronizadas`:"Aún no hay valoraciones.";
 }
-$('result').style.display='block';
-}
-function reset(){
-running=false;clearInterval(timer);clearTimeout(mover);
-$('target').style.display='none';$('target').classList.remove('pop');
-$('start').disabled=false;$('stop').disabled=true;$('reset').disabled=false;
-$('gamePanel').classList.remove('is-running');
-$('message').style.display='grid';
-$('message').innerHTML='<div><strong>Tu ronda empieza aquí</strong>Selecciona una dificultad y pulsa «Empezar ronda».</div>';
-$('time').textContent='30.0 s';$('hits').textContent='0';$('score').textContent='0';$('timebar').style.width='100%';$('result').style.display='none';
-}
-$('start').onclick=start;
-$('stop').onclick=()=>finish(true);
-$('reset').onclick=reset;
-$('sessions').textContent=sessions;
-applyTheme();
-$('expandArena').onclick=()=>{
-const panel=$('gamePanel'),btn=$('expandArena');
-const expanded=panel.classList.toggle('is-expanded');
-btn.setAttribute('aria-pressed',String(expanded));
-btn.textContent=expanded?'⤡ Reducir campo':'⤢ Ampliar campo';
-};
+connectDatabase();
 </script>
 </body>
 </html>
