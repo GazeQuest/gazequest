@@ -1347,8 +1347,8 @@ $('arena').addEventListener('pointerdown',e=>{
   const ar=$('arena').getBoundingClientRect();
   const rad=(parseFloat(targetEl.style.width)||levels[level].size)/2+18;
   if(Math.hypot(e.clientX-(ar.left+curX),e.clientY-(ar.top+curY))<=rad){
-    cancelAnimationFrame(moveRaf);suppressUntil=performance.now()+420;
-    hitFx();targetEl.click();
+    cancelAnimationFrame(moveRaf);
+    hitFx();targetEl.click();suppressUntil=performance.now()+420;
   }
 },true);
 window.addEventListener('click',e=>{if(performance.now()<suppressUntil){e.stopImmediatePropagation();e.stopPropagation()}},true);
@@ -1605,5 +1605,239 @@ Object.assign(sfx,{
 });
 window.applyTheme();
 </script>
+<!-- ===== GAZEQUEST ADD-ON: títulos animados + intro Ranked épica (integrado) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="heatW" x="-20%" y="-60%" width="140%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.08" numOctaves="2" seed="3" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter></svg>
+<style>
+/* ---------- TÍTULOS (insignia) ---------- */
+.rank-list{padding-top:24px}
+.tt{display:inline-block;position:relative;margin-left:9px;padding:2px 9px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;isolation:isolate;perspective:180px;white-space:nowrap;color:var(--c);border:1px solid rgba(var(--r),.55);background:linear-gradient(110deg,rgba(var(--r),.16),rgba(var(--r),.42),rgba(var(--r),.16));background-size:250% 100%;animation:ttBg 3s linear infinite}
+@keyframes ttBg{to{background-position:-250% 0}}
+@keyframes ttPulse{50%{box-shadow:0 0 14px rgba(var(--r),.6)}}
+@keyframes ttShake{0%,90%,100%{translate:0}93%{translate:-1px 1px}96%{translate:1px -1px}}
+.tt-0{animation-duration:5s}
+.tt-1{animation:ttBg 4s linear infinite,ttPulse 3s ease-in-out infinite}
+.tt-2{animation:ttBg 3s linear infinite,ttPulse 2s ease-in-out infinite}
+.tt-3{animation:ttBg 2.2s linear infinite,ttPulse 1.4s ease-in-out infinite}
+.tt-4{animation:ttBg 1.6s linear infinite,ttPulse 1s ease-in-out infinite,ttShake 2.4s infinite}
+.cube{display:inline-block;position:relative}
+.tt-t{position:relative;display:inline-block}
+/* 3D: extrusión real por capas (Extremo, Extremo+, Imposible, Infierno) */
+.tt-5,.tt-6,.tt-7,.tt-8{padding:3px 12px;box-shadow:0 0 14px rgba(var(--r),.35),inset 0 0 8px rgba(var(--r),.2);border-color:rgba(var(--r),.85);animation:ttBg 2.4s linear infinite,ttPulse 1.6s ease-in-out infinite}
+.tt-5 .cube,.tt-6 .cube,.tt-7 .cube,.tt-8 .cube{transform-style:preserve-3d;animation:ttSwing 4s ease-in-out infinite alternate}
+.tt-6 .cube{animation-duration:2.8s}.tt-7 .cube{animation-duration:3.2s}.tt-8 .cube{animation:ttSwing 3.4s ease-in-out infinite alternate,ttBreath 1.2s ease-in-out infinite alternate}
+@keyframes ttSwing{from{transform:rotateY(-18deg) rotateX(7deg)}to{transform:rotateY(18deg) rotateX(-5deg)}}
+@keyframes ttBreath{to{scale:1.07}}
+.ly{position:absolute;left:0;top:0;pointer-events:none;transform:translateZ(calc(var(--k)*-1.7px));color:color-mix(in srgb,var(--c) calc(100% - var(--k)*9%),#000)}
+.tt-5 .tt-t,.tt-6 .tt-t,.tt-7 .tt-t{transform:translateZ(2px);background:linear-gradient(110deg,var(--c) 38%,#fff 50%,var(--c) 62%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 2.6s linear infinite}
+.tt-6 .tt-t{animation-duration:1.5s;filter:drop-shadow(0 0 5px var(--c))}
+.tt-7 .tt-t{background-image:linear-gradient(110deg,#d68bff 35%,#fff 50%,#6ee7ff 65%)}
+.tt-7 .ly,.tt-7 .tt-t{animation-name:shine,ttHue}
+.tt-7 .ly{animation:ttHue 5s linear infinite}.tt-7 .tt-t{animation:shine 2s linear infinite,ttHue 5s linear infinite}
+@keyframes ttHue{to{filter:hue-rotate(360deg)}}
+.tt-6::after,.tt-7::after,.tt-8::after{content:"";position:absolute;inset:-2px;border-radius:8px;padding:1.5px;pointer-events:none;background:conic-gradient(from var(--ang),transparent 0 50%,var(--c) 85%,#fff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:angSpin 2.4s linear infinite}
+/* INFIERNO 3D + 4D: metal fundido, llamas con profundidad, calor, brasas */
+.tt-8{padding:4px 15px;font-size:11px;border-color:#ff6b1a;background:linear-gradient(110deg,#3a0a02,#8a1a00,#3a0a02);background-size:250% 100%;animation:ttBg 1.6s linear infinite,hellGlow .7s ease-in-out infinite alternate}
+@keyframes hellGlow{from{box-shadow:0 0 14px rgba(255,80,0,.5),inset 0 0 10px rgba(255,120,0,.3)}to{box-shadow:0 0 30px rgba(255,120,0,.95),0 0 54px rgba(255,40,0,.5),inset 0 0 16px rgba(255,190,60,.45)}}
+.tt-8 .tt-t{transform:translateZ(3px);background:linear-gradient(180deg,#fff7c2,#ffc83a 30%,#ff5a14 62%,#c10f00 85%,#ffb300);background-size:100% 240%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:lava 1.1s linear infinite;filter:drop-shadow(0 0 6px #ff5a14)}
+@keyframes lava{to{background-position:0 -240%}}
+.tt-8 .ly{color:color-mix(in srgb,#ff5a14 calc(100% - var(--k)*9%),#1c0000)}
+.tt-8 .ly[style*="--k:8"]{text-shadow:0 0 10px #ff2a00,0 0 20px #ff2a0088}
+.tt-fire{position:absolute;left:-8px;right:-8px;bottom:50%;height:32px;pointer-events:none;filter:url(#heatW);transform:translateZ(-16px);z-index:-1}
+.tt-fire.f2{transform:translateZ(18px);bottom:38%;height:20px;opacity:.75;z-index:3}
+.ff{position:absolute;bottom:0;left:var(--x);width:13px;height:var(--h);margin-left:-6px;background:radial-gradient(ellipse 50% 75% at 50% 100%,#fff3a8,#ffb300 30%,#ff4d00 60%,transparent 76%);border-radius:50% 50% 40% 40%/80% 80% 20% 20%;transform-origin:50% 100%;animation:flame var(--d) ease-in-out infinite alternate;mix-blend-mode:screen}
+.em{position:absolute;bottom:40%;left:var(--x);width:3px;height:3px;border-radius:50%;background:#ffb347;box-shadow:0 0 6px #ff4d00;animation:tEmber var(--d) linear infinite}
+@keyframes tEmber{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx),-40px) scale(.2);opacity:0}}
+body.lite .tt-fire{filter:none}body.lite .ff:nth-child(even),body.lite .em:nth-child(even){display:none}
+/* ---------- COLOR DEL NOMBRE ---------- */
+.nm{font-weight:800;display:inline-block;background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite}
+.nm-0{background-image:linear-gradient(90deg,#a8e6b0,#eafff0,#a8e6b0);animation-duration:6s}
+.nm-1{background-image:linear-gradient(90deg,#c4e78a,#f6ffd8,#c4e78a);animation-duration:5s}
+.nm-2{background-image:linear-gradient(90deg,#f0bd69,#fff0c9,#f0bd69);animation-duration:4s}
+.nm-3{background-image:linear-gradient(90deg,#f39b55,#ffe3c8,#f39b55);animation-duration:3.2s}
+.nm-4{background-image:linear-gradient(90deg,#f16e55,#ffd0c6,#f16e55);animation-duration:2.6s}
+.nm-5{background-image:linear-gradient(90deg,#ed4b57,#ff9bb0,#fff,#ed4b57);animation:shine 2.4s linear infinite,nmGlow 1.6s ease-in-out infinite alternate;--g:#ed4b57}
+.nm-6{background-image:linear-gradient(90deg,#ff263f,#ff9aa5,#fff,#ff263f);animation:shine 1.6s linear infinite,nmGlow .9s ease-in-out infinite alternate;--g:#ff263f}
+.nm-7{background-image:linear-gradient(90deg,#a64bba,#6ee7ff,#ff7ae0,#a64bba);animation:shine 2s linear infinite,nmGlow 1.2s ease-in-out infinite alternate,ttHue 6s linear infinite;--g:#a64bba}
+@keyframes nmGlow{from{filter:drop-shadow(0 0 2px var(--g))}to{filter:drop-shadow(0 0 9px var(--g))}}
+.nm-8{background-image:linear-gradient(90deg,#fff3a8,#ffb300,#ff4d00,#d10000,#ffb300,#fff3a8);transform-origin:50% 100%;animation:shine 1.1s linear infinite,nmFlame .45s ease-in-out infinite alternate}
+@keyframes nmFlame{from{transform:scaleY(1);filter:drop-shadow(0 0 3px #ff5a14) drop-shadow(0 -2px 6px #ff2a00)}to{transform:scaleY(1.07) skewX(-2deg);filter:drop-shadow(0 0 8px #ffb300) drop-shadow(0 -5px 12px #ff2a00)}}
+/* mis títulos */
+.my-t{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 4px 8px}
+/* ---------- INTRO RANKED (sin bordes negros) ---------- */
+.rk2{position:fixed;inset:0;z-index:500;pointer-events:none;display:grid;place-items:center;overflow:hidden;animation:k2bg 4s ease forwards;--a:var(--lv-color,#ffc83d);background:radial-gradient(circle at 50% 48%,rgba(255,228,150,.6) 0,rgba(255,165,45,.38) 22%,rgba(205,35,75,.5) 56%,rgba(40,75,215,.58) 100%)}
+.rk2.off{animation-duration:2.2s;--a:#ff5a5a;background:radial-gradient(circle at 50% 50%,rgba(255,140,140,.55),rgba(200,25,40,.55) 60%,rgba(110,10,40,.55) 100%)}
+@keyframes k2bg{0%{opacity:0}8%,86%{opacity:1}100%{opacity:0}}
+.rk2 .k-rays{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;margin:-60vmax 0 0 -60vmax;background:repeating-conic-gradient(rgba(255,255,255,.2) 0 5deg,transparent 5deg 17deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 62%);mask-image:radial-gradient(circle,#000 0,transparent 62%);animation:k2spin 9s linear infinite;opacity:.75}
+@keyframes k2spin{to{transform:rotate(360deg)}}
+.rk2 .k-flash{position:absolute;inset:0;background:radial-gradient(circle,#fff,#ffe9a8 60%,#ffc060);opacity:0;animation:k2fl 4s linear forwards}
+.rk2.off .k-flash{background:radial-gradient(circle,#fff,#ff9a9a 60%,#ff5a5a);animation-duration:2.2s}
+@keyframes k2fl{0%{opacity:.75}6%{opacity:0}17%{opacity:.95}25%{opacity:0}38%{opacity:.5}45%{opacity:0}60%{opacity:.6}68%{opacity:0}79%{opacity:.9}88%,100%{opacity:0}}
+.rk2 .k-pil{position:absolute;bottom:0;width:7vw;height:0;left:var(--x);background:linear-gradient(0deg,var(--a),rgba(255,255,255,.0));opacity:.5;animation:k2pil 1.2s cubic-bezier(.2,.9,.2,1) var(--d) forwards}
+@keyframes k2pil{to{height:var(--h)}}
+.rk2 .k-ring{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 24px var(--a);opacity:0;animation:k2ring 1.4s ease-out var(--d) forwards}
+@keyframes k2ring{0%{transform:scale(1);opacity:1}100%{transform:scale(70);opacity:0}}
+.rk2 .k-sl{position:absolute;left:-20%;width:140%;height:6px;background:linear-gradient(90deg,transparent,var(--a),#fff,var(--a),transparent);box-shadow:0 0 20px var(--a);opacity:0;animation:k2sl .8s cubic-bezier(.2,.8,.2,1) var(--d) forwards}
+@keyframes k2sl{0%{opacity:1;translate:-110% 0}100%{opacity:0;translate:110% 0}}
+.rk2 .k-sp{position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 10px var(--a);opacity:0;animation:k2sp 1.4s cubic-bezier(.1,.8,.3,1) .75s forwards}
+@keyframes k2sp{0%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+.rk2 .k-cn{position:absolute;width:12vmin;height:12vmin;border:3px solid #fff;box-shadow:0 0 18px var(--a),inset 0 0 18px var(--a);opacity:0;animation:k2cn 3.6s ease .2s forwards}
+.rk2.off .k-cn{animation-duration:2s}
+.rk2 .k-cn.tl{left:5vmin;top:5vmin;border-right:0;border-bottom:0}.rk2 .k-cn.tr{right:5vmin;top:5vmin;border-left:0;border-bottom:0}
+.rk2 .k-cn.bl{left:5vmin;bottom:5vmin;border-right:0;border-top:0}.rk2 .k-cn.br{right:5vmin;bottom:5vmin;border-left:0;border-top:0}
+@keyframes k2cn{0%{opacity:0;transform:scale(2)}12%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
+.rk2 .k-box{position:relative;text-align:center;z-index:2}
+.rk2 .k-eye{font-weight:800;letter-spacing:.5em;font-size:clamp(9px,1.8vw,14px);color:#fff;text-shadow:0 0 12px var(--a);opacity:0;animation:k2in 3.1s .3s ease forwards}
+.rk2.off .k-eye{animation-duration:1.7s}
+@keyframes k2in{0%{opacity:0;transform:translateY(14px)}15%,80%{opacity:1;transform:none}100%{opacity:0}}
+.rk2 .k-title{display:flex;justify-content:center;font:900 clamp(46px,13vw,150px)/1.05 Inter,system-ui,sans-serif;letter-spacing:.06em;margin:8px 0;filter:drop-shadow(0 0 22px rgba(255,200,70,.95))}
+.rk2.off .k-title{font-size:clamp(28px,8vw,88px);filter:drop-shadow(0 0 22px rgba(255,60,60,.95))}
+.rk2 .k-title span{display:inline-block;opacity:0;background:linear-gradient(180deg,#fff,#ffe58a 45%,#ff9a1a);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1px rgba(150,60,0,.55);animation:k2let 3.2s cubic-bezier(.2,.9,.2,1) calc(.7s + var(--i)*.08s) forwards}
+.rk2.off .k-title span{background:linear-gradient(180deg,#fff,#ff9a9a 45%,#d01a1a);-webkit-background-clip:text;background-clip:text;animation-duration:1.5s;animation-delay:calc(.2s + var(--i)*.04s)}
+@keyframes k2let{0%{opacity:0;transform:scale(4) rotate(8deg)}10%{opacity:1;transform:scale(1)}84%{opacity:1;transform:scale(1.03)}100%{opacity:0;transform:scale(1.25)}}
+.rk2 .k-sub{font-weight:800;letter-spacing:.4em;color:#fff;text-shadow:0 0 14px var(--a);font-size:clamp(11px,2.4vw,19px);opacity:0;animation:k2in 2.3s 1.6s ease forwards}
+.rk2.off .k-sub{animation-duration:1.4s;animation-delay:.5s}
+.rk2 .k-bar{width:min(380px,70vw);height:5px;margin:18px auto 0;background:rgba(255,255,255,.28);overflow:hidden;opacity:0;animation:k2in 2.8s .5s ease forwards}
+.rk2 .k-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3a5a,#ffe08a,#fff);box-shadow:0 0 12px var(--a);animation:k2fill 2.6s .6s ease-out forwards}
+@keyframes k2fill{to{width:100%}}
+/* ---------- RENDIMIENTO (sin cambiar el aspecto) ---------- */
+.review-section{content-visibility:auto;contain-intrinsic-size:auto 700px}
+.arena{contain:layout paint}
+.rank-fx .beam{width:110vmax;height:110vmax;margin-left:-55vmax}
+body.playing .rank-fx *,body.playing .arena::after{animation-play-state:paused!important}
+body.lite .rank-fx,body.lite .arena::after,body.lite .hell-glow{display:none}
+body.lite .arena-fire i:nth-child(even){display:none}
+body.lite .spark,body.lite .trail-p,body.lite .hit-burst{box-shadow:none}
+body.lite .tt-fire{filter:none}
+</style>
+<script>
+(function(run){document.readyState==='complete'?run():window.addEventListener('load',run)})(function(){
+if(typeof $==='undefined'||typeof levels==='undefined'||typeof sfx==='undefined'){console.error('GazeQuest add-on: pega este bloque despues del ultimo script de tu pagina, justo antes del cierre del body.');return}
+/* ===== TÍTULOS: compatibles con ranked_champions / ranked_active_titles / equip_title ===== */
+const TN=['Campeón Zen','Campeón Trébol','Campeón Rayo','Campeón Certero','Campeón Demoledor','Campeón Extremo','Campeón Extremo+','Campeón Imposible','Señor del Infierno'];
+const TOKEN_KEY='gqTitleToken';
+let champs={},active={};
+function titleToken(){
+  let t=store.get(TOKEN_KEY,'');
+  if(!/^[0-9a-f-]{36}$/i.test(t)){
+    t=(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)}));
+    store.set(TOKEN_KEY,t);
+  }
+  return t;
+}
+function badge(lv){
+  const L=levels[lv],t=TN[lv];
+  let h='<span class="tt tt-'+lv+'" style="--c:'+L.color+';--r:'+L.rgb+'" title="'+t+'"><span class="cube">';
+  if(lv>=5){const n=lv===8?8:5;for(let k=n;k>=1;k--)h+='<span class="ly" style="--k:'+k+'" aria-hidden="true">'+t+'</span>'}
+  h+='<span class="tt-t">'+t+'</span></span>';
+  if(lv===8){
+    for(const c of ['','f2']){
+      h+='<span class="tt-fire '+c+'" aria-hidden="true">';
+      for(let i=0;i<9;i++)h+='<i class="ff" style="--x:'+(6+i*11.5)+'%;--h:'+(c?14+(i%3)*5:20+(i*7%13))+'px;--d:'+(.5+(i%4)*.18)+'s"></i>';
+      if(!c)for(let i=0;i<6;i++)h+='<b class="em" style="--x:'+(10+i*15)+'%;--dx:'+((i%2?1:-1)*(6+i*3))+'px;--d:'+(1+i*.23)+'s"></b>';
+      h+='</span>';
+    }
+  }
+  return h+'</span>';
+}
+async function loadTitles(){
+  if(!db)return;
+  try{
+    const [c,a]=await Promise.all([db.rpc('ranked_champions'),db.rpc('ranked_active_titles')]);
+    champs={};active={};
+    (c.data||[]).forEach(r=>champs[r.difficulty]=r.username);
+    (a.data||[]).forEach(r=>active[r.username]=r.difficulty);
+  }catch(e){console.warn('titles',e)}
+}
+function decorate(){
+  document.querySelectorAll('#rankList .rank-row .name').forEach(el=>{
+    if(el.dataset.d)return;el.dataset.d='1';
+    const u=el.textContent,lv=active[u];if(lv===undefined)return;
+    el.innerHTML='<span class="nm nm-'+lv+'">'+esc(u)+'</span>'+badge(lv);
+  });
+  const rb=$('rbUser');
+  if(rb&&rankedUser&&active[rankedUser]!==undefined)rb.innerHTML='<span class="nm nm-'+active[rankedUser]+'">'+esc(rankedUser)+'</span>';
+}
+async function equip(lv){
+  const u=rankedUser||store.get(RANKED_USER_KEY,'');
+  if(!db||!u)return;
+  const {data,error}=await db.rpc('equip_title',{p_username:u,p_level:lv,p_token:titleToken()});
+  if(error){toast('⚠ '+esc(error.message));return}
+  if(data==='ok')toast(lv===null?'Título quitado':'🏆 Título equipado');
+  else if(data==='no_champion')toast('⚠ Ya no eres el #1 de esa dificultad');
+  else if(data==='wrong_owner')toast('⚠ Ese nombre pertenece a otro dispositivo');
+  loadRank(rankViewDiff);
+}
+function renderMine(){
+  const box=$('myTitles');if(!box)return;
+  const u=rankedUser||store.get(RANKED_USER_KEY,'');
+  if(!u){box.innerHTML='<p class="muted">Activa Ranked con tu nombre para ver tus títulos.</p>';return}
+  const owned=Object.keys(champs).filter(k=>champs[k]===u).map(Number),eq=active[u];
+  box.innerHTML=owned.length?owned.map(lv=>'<div class="my-t">'+badge(lv)+'<button class="mini-btn" type="button" data-eq="'+lv+'">'+(eq===lv?'Quitar':'Equipar')+'</button></div>').join(''):'<p class="muted">Sé el #1 de una dificultad en Ranked para desbloquear su título animado.</p>';
+  box.querySelectorAll('[data-eq]').forEach(b=>b.addEventListener('click',()=>{const lv=+b.dataset.eq;sfx.btn();equip(eq===lv?null:lv)}));
+}
+(function(){
+  const p=document.createElement('section');p.className='panel';p.style.marginTop='16px';p.setAttribute('data-chrome','');
+  p.innerHTML='<div class="panel-head"><h2>MIS TÍTULOS</h2><span class="muted">Los campeones #1 pueden equiparlos</span></div><div class="pad" id="myTitles"></div>';
+  $('rankList').closest('.panel').after(p);
+})();
+const _loadRank=loadRank;
+window.loadRank=async function(d){await _loadRank(d);await loadTitles();decorate();renderMine()};
+renderMine();if(db)loadRank(rankViewDiff);
+/* rendimiento: ruido en caché, menos partículas en equipos flojos y modo lite automático si hay tirones */
+(function(){
+  let nb=null,nbCtx=null;
+  window.gqNoiseBuf=function(ctx,dur){
+    if(dur>1.5){const n=Math.floor(ctx.sampleRate*dur),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;return b}
+    if(!nb||nbCtx!==ctx){const n=Math.floor(ctx.sampleRate*1.5);nb=ctx.createBuffer(1,n,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;nbCtx=ctx}
+    return nb;
+  };
+  const lite=()=>document.body.classList.contains('lite');
+  const _eb=emberBurst,_te=trailEmber;
+  window.emberBurst=function(x,y,n,pal){return _eb(x,y,lite()?Math.ceil(n/2):n,pal)};
+  window.trailEmber=function(x,y){if(!lite())_te(x,y)};
+  let last=0,n=0,sum=0;
+  (function f(t){
+    if(running){if(last){const d=t-last;if(d<200){sum+=d;n++;if(n>=45){if(sum/n>24)document.body.classList.add('lite');sum=0;n=0}}}last=t}
+    else{last=0;n=0;sum=0}
+    requestAnimationFrame(f);
+  })(0);
+})();
+/* ===== INTRO RANKED: más larga, detallada y con sonido épico ===== */
+window.rankIntro=function(on){
+  if(prefersReducedMotion){toast(on?'⚔ Ranked activado':'Saliste de Ranked');return}
+  const word=on?'RANKED':'FUERA DE RANKED',o=document.createElement('div');
+  o.className='rk2 '+(on?'on':'off');
+  let h='<div class="k-rays"></div><div class="k-flash"></div>';
+  for(let i=0;i<6;i++)h+='<i class="k-pil" style="--x:'+(i*17-2)+'%;--h:'+(35+(i*17%40))+'vh;--d:'+(.15+i*.06)+'s"></i>';
+  h+='<i class="k-ring" style="--d:.7s"></i><i class="k-ring" style="--d:.95s"></i><i class="k-ring" style="--d:1.2s"></i><i class="k-sl" style="--d:.1s;top:36%;rotate:-8deg"></i><i class="k-sl" style="--d:.3s;top:64%;rotate:8deg"></i>';
+  h+='<i class="k-cn tl"></i><i class="k-cn tr"></i><i class="k-cn bl"></i><i class="k-cn br"></i>';
+  for(let i=0;i<24;i++){const an=i/24*Math.PI*2,r=120+(i*37%260);h+='<i class="k-sp" style="--dx:'+Math.round(Math.cos(an)*r)+'px;--dy:'+Math.round(Math.sin(an)*r)+'px"></i>'}
+  h+='<div class="k-box"><div class="k-eye">'+(on?'TEMPORADA 1 · COMPETICIÓN EN VIVO':'VOLVIENDO AL MODO LIBRE')+'</div><div class="k-title">'+word.split('').map((c,i)=>'<span style="--i:'+i+'">'+(c===' '?'&nbsp;':c)+'</span>').join('')+'</div><div class="k-sub">'+(on?esc(rankedUser)+' · '+esc(levels[level].name.toUpperCase()):'MODO LIBRE')+'</div>'+(on?'<div class="k-bar"><i></i></div>':'')+'</div>';
+  o.innerHTML=h;document.body.appendChild(o);
+  if(on)sfx.rkOn();else sfx.rkOff();
+  setTimeout(()=>o.remove(),on?4100:2300);
+};
+Object.assign(sfx,{
+  rkOn:()=>{
+    const v=voice,b=(d,vol)=>v({f:95,to:34,type:'sine',dur:.45,vol,delay:d});
+    v({f:40,to:420,type:'sawtooth',dur:1.5,vol:.07,cut:1400,att:.9});
+    v({noise:1,dur:1.5,vol:.07,hp:1,cut:900,att:1.1});
+    [0,420,800,1100,1350].forEach((d,i)=>b(d,.25+i*.05));
+    v({noise:1,dur:.3,vol:.08,hp:1,cut:2500,delay:120});v({noise:1,dur:.3,vol:.08,hp:1,cut:2500,delay:300});
+    /* impacto */
+    b(700,.6);v({noise:1,dur:.9,vol:.12,cut:3500,delay:700});
+    [-12,-5,0,3].forEach((s,i)=>v({f:N(s),type:'sawtooth',dur:1.3,vol:.06,cut:1500,att:.02,delay:720+i*20,det:i%2?7:-7}));
+    /* acorde de metales + coro */
+    setTimeout(()=>{b(0,.6);[0,4,7,12,16].forEach((s,i)=>v({f:N(s-12),type:'sawtooth',dur:1.6,vol:.055,cut:2300,att:.05,det:i%2?6:-6}));[12,16,19,24].forEach((s,i)=>v({f:N(s),type:'triangle',dur:1.8,vol:.05,att:.35,delay:60+i*30}));v({noise:1,dur:1.5,vol:.06,hp:1,cut:5000})},1500);
+    /* fanfarria final */
+    [12,16,19,24,28,31,36].forEach((s,i)=>v({f:N(s),type:'triangle',dur:.35,vol:.08,cut:4000,delay:2350+i*110}));
+    [0,7,12,16,19].forEach((s,i)=>v({f:N(s),type:'sawtooth',dur:1.1,vol:.05,cut:2400,att:.03,delay:3150+i*15}));
+    b(3150,.55);v({noise:1,dur:1.3,vol:.1,hp:1,cut:5500,delay:3150});
+  },
+  rkOff:()=>{voice({f:700,to:50,type:'sawtooth',dur:.8,vol:.08,cut:1800});boom(.5);voice({noise:1,dur:.5,vol:.09,cut:1500,delay:200});voice({f:110,to:40,type:'sawtooth',dur:.9,vol:.06,cut:600,delay:500})}
+});
+});
+</script>
+
 </body>
 </html>
