@@ -2201,5 +2201,480 @@ if('IntersectionObserver' in window){
 });
 </script>
 
+<!--GQ-PATCH-V5-START-->
+<!-- ===== GAZEQUEST · PARCHE v5 =====
+     PEGAR justo antes de </body>, DESPUÉS del último bloque que ya tienes. No borres nada. -->
+<style>
+/* ---------- 1. Letras de entrar/salir de Ranked: SIN bordes negros ---------- */
+.rk2 .k-title,.rk2.off .k-title{filter:drop-shadow(0 0 22px rgba(255,200,70,.9)) drop-shadow(0 0 60px rgba(255,120,30,.45))}
+.rk2.off .k-title{filter:drop-shadow(0 0 22px rgba(255,70,70,.9)) drop-shadow(0 0 60px rgba(255,30,30,.45))}
+.rk2 .k-title span,.rk2.off .k-title span{-webkit-text-stroke:0!important;paint-order:normal;text-shadow:none}
+.rk2 .k-eye,.rk2 .k-sub{background:rgba(255,200,70,.16);border:1px solid rgba(255,255,255,.35);text-shadow:0 0 12px var(--a)}
+.rk2.off .k-eye,.rk2.off .k-sub{background:rgba(255,70,70,.18)}
+.ranked-btn,.ranked-btn.exit{-webkit-text-stroke:0;text-shadow:0 0 12px rgba(255,170,50,.9)}
+.ranked-btn.exit{text-shadow:0 0 12px #ff6a6a}
+
+/* ---------- 2. Rediseño general ---------- */
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,"Segoe UI",sans-serif}
+.wrap{max-width:1240px}
+.top{position:sticky;top:10px;z-index:30;padding:11px 16px;border:1px solid rgba(var(--accent-rgb),.22);border-radius:18px;background:rgba(10,16,13,.9);box-shadow:0 12px 34px -12px #000a}
+.hero{padding:56px 0 30px;max-width:880px}
+h1{font-size:clamp(42px,8vw,86px);font-weight:900;letter-spacing:-.055em;line-height:.97}
+.panel{border-radius:22px;border:1px solid rgba(var(--accent-rgb),.2);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,0) 40%),rgba(10,16,13,.94);box-shadow:0 26px 60px -26px #000c,inset 0 1px 0 rgba(255,255,255,.07)}
+.panel-head{padding:18px 22px}.pad{padding:22px}
+.levels{gap:12px}.level{border-radius:16px;min-height:94px;padding:14px}
+.level b{font-size:12px;letter-spacing:.03em}
+.mode,.primary,.secondary,.ranked-btn,.field,.stat{border-radius:14px}
+.stat{padding:16px}
+.rank-row{grid-template-columns:44px 1fr auto;padding:10px 14px;border-radius:14px}
+.review-item{padding:15px 4px}
+button,.panel,.stat,.level,.rank-row,.review-item{transition-timing-function:cubic-bezier(.22,1,.36,1)}
+.hud>span,.stat,.level{animation-fill-mode:backwards}
+
+/* ---------- 3. HUD reconstruida (mismos ids, otro diseño; el color sigue a la dificultad) ---------- */
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;background:transparent;border-top:0}
+.hud>span{position:relative;display:flex;flex-direction:column;gap:2px;padding:11px 14px 11px 48px;border-radius:16px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;background:linear-gradient(135deg,rgba(var(--accent-rgb),.16),rgba(var(--accent-rgb),.04));border:1px solid rgba(var(--accent-rgb),.35);overflow:hidden}
+.hud>span::before{position:absolute;left:14px;top:50%;translate:0 -50%;font-size:20px;filter:drop-shadow(0 0 6px var(--accent))}
+.hud>span:nth-child(1)::before{content:"⏱"}.hud>span:nth-child(2)::before{content:"🎯"}.hud>span:nth-child(3)::before{content:"✦";color:var(--accent)}
+.hud strong{font-size:24px;line-height:1.1;color:#fff;letter-spacing:-.02em;text-shadow:0 0 14px rgba(var(--accent-rgb),.6)}
+body.zen-on .hud{grid-template-columns:repeat(3,auto);padding:8px 12px;background:rgba(8,12,10,.72)}
+body.zen-on .hud>span{padding:7px 12px 7px 38px}body.zen-on .hud strong{font-size:18px}
+/* Ranked: marcador de torneo */
+body.ranked-mode .hud>span{border:0;border-radius:0;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);padding-left:52px;background:linear-gradient(100deg,rgba(190,20,50,.4),rgba(255,200,60,.16) 55%,rgba(40,90,220,.36));box-shadow:inset 0 0 0 1px rgba(255,200,60,.55)}
+body.ranked-mode .hud>span::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;inset:0 0 auto 0;background:linear-gradient(90deg,#ff3a5a,#ffc83d,#3a6aff)}
+body.ranked-mode .hud>span:nth-child(1)::before{content:"⚔"}body.ranked-mode .hud>span:nth-child(2)::before{content:"🏅"}body.ranked-mode .hud>span:nth-child(3)::before{content:"👑"}
+/* Infierno: HUD de brasas con borde de llamas */
+body.infierno .hud>span{border:1px solid rgba(255,110,30,.65);border-radius:0;padding-left:50px;clip-path:polygon(0 9px,9% 0,17% 7px,27% 0,39% 8px,50% 0,62% 7px,74% 0,86% 8px,100% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(70,10,2,.95),rgba(22,3,1,.98));box-shadow:inset 0 0 22px rgba(255,80,0,.3)}
+body.infierno .hud>span::after{content:"";position:absolute;inset:auto 0 0 0;height:70%;background:linear-gradient(0deg,rgba(255,120,20,.6),rgba(255,60,0,.15) 60%,transparent);pointer-events:none;animation:hudFl .8s ease-in-out infinite alternate}
+@keyframes hudFl{from{opacity:.55;transform:scaleY(.8)}to{opacity:1;transform:scaleY(1.05)}}
+body.infierno .hud>span:nth-child(1)::before{content:"⌛"}body.infierno .hud>span:nth-child(2)::before{content:"💀"}body.infierno .hud>span:nth-child(3)::before{content:"🔥"}
+body.infierno .hud strong{color:#ffe9a8;text-shadow:0 0 14px #ff5a14}
+body.ranked-mode.infierno .hud>span{box-shadow:inset 0 0 22px rgba(255,80,0,.3),inset 0 0 0 1px rgba(255,200,60,.5)}
+/* chip de dificultad dentro del campo */
+#arenaHud{position:absolute;left:16px;bottom:14px;z-index:4;display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(var(--accent-rgb),.14);border:1px solid rgba(var(--accent-rgb),.45);pointer-events:none}
+#arenaHud .ah-d{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:dotP 1.6s ease-in-out infinite}
+#arenaHud em{font-style:normal;color:#1b1200;background:#ffc83d;border-radius:5px;padding:1px 6px}
+body.infierno #arenaHud{border-color:#ff7a1a;background:rgba(80,12,2,.72)}
+body.infierno #arenaHud .ah-d{background:#ffb300;box-shadow:0 0 12px #ff4d00}
+
+/* ---------- 4. Títulos: nombres nuevos, más detalle ---------- */
+.tx{border-radius:9px;padding:4px 12px 4px 9px;font-size:10px;letter-spacing:.12em;background:linear-gradient(105deg,rgba(var(--r),.18),rgba(var(--r),.5) 50%,rgba(var(--r),.18)) 0 0/260% 100%}
+.tx-ic{font-size:13px}
+.tx-3 .tx-t,.tx-4 .tx-t{background:linear-gradient(100deg,var(--c) 35%,#fff 50%,var(--c) 65%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:hdSh1 2.6s linear infinite}
+.tx-8{padding:5px 16px 5px 11px;font-size:11px;background:linear-gradient(90deg,#3a0800,#b32000,#ff7a00,#b32000,#3a0800) 0 0/300% 100%;animation:ttBg 2s linear infinite,hellGlow 1s ease-in-out infinite alternate}
+.tx-8 .tx-t{background:linear-gradient(180deg,#fff7c2,#ffc83a 45%,#ff6a1a 80%,#fff2b8) 0 0/100% 240%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:lava 1.2s linear infinite}
+.tx-8 .tx-ic{font-size:15px;animation:txIc 1.6s ease-in-out infinite}
+.tx-e{position:absolute;bottom:60%;left:var(--x);width:3px;height:3px;border-radius:50%;background:#ffd27a;box-shadow:0 0 5px #ff5a14;opacity:0;z-index:4;animation:txE var(--d) linear infinite}
+@keyframes txE{0%{opacity:0;transform:translate(0,4px)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-28px) scale(.3)}}
+.nm-5,.nm-6,.nm-7{animation:shine 2.4s linear infinite!important;filter:none!important}
+.nm-8{animation:shine 1.2s linear infinite!important;filter:none!important}
+.rank-row:nth-child(n+4) .tx::before{animation:none}
+
+/* ---------- 5. Click en el fondo: anillo + destello por dificultad ---------- */
+.bgc{position:fixed;z-index:2;left:var(--x);top:var(--y);width:0;height:0;pointer-events:none}
+.bgc::before,.bgc::after{content:"";position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;border:2px solid rgba(var(--c),.9);animation:bgR .75s cubic-bezier(.1,.7,.2,1) forwards}
+.bgc::after{border-width:1px;border-style:dashed;animation-delay:.08s}
+.bgc i{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 16px 4px rgba(var(--c),.9);animation:bgC .45s ease-out forwards}
+.bgc[data-l="3"]::before,.bgc[data-l="6"]::before,.bgc[data-l="6"]::after{border-radius:4px}
+.bgc[data-l="4"]::before{border-radius:38%}
+.bgc[data-l="8"]::before{border:0;background:radial-gradient(circle,rgba(255,200,60,.9),rgba(255,70,0,.6) 50%,transparent 72%)}
+@keyframes bgR{from{transform:scale(.1);opacity:1}to{transform:scale(3.4) rotate(90deg);opacity:0}}
+@keyframes bgC{to{transform:scale(5);opacity:0}}
+
+/* ---------- 6. Anti-lag ---------- */
+.bar span{width:100%!important;transform-origin:left;will-change:transform;transition:none!important}
+body.playing .ambient-layer,body.playing .hell-layer,body.playing .rank-fx{visibility:hidden}
+body.playing .wrap :not(.arena):not(.arena *){animation-play-state:paused!important}
+.ambient-orb{will-change:auto}
+</style>
+<script>
+(function(run){document.readyState==='complete'?run():addEventListener('load',run)})(function(){
+if(typeof $==='undefined'||typeof levels==='undefined'||typeof voice==='undefined'){console.error('Pega este bloque al final, antes de </body>');return}
+const R=Math.random,B=document.body;
+
+/* ===== A. MOTOR DE LA BOLA: la hitbox ES la posición real de la bola en cada instante ===== */
+let seg={x0:0,y0:0,x1:0,y1:0,t0:0,d:0},mvId=0;
+const ease=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+function ballAt(t){const k=seg.d?Math.min(1,Math.max(0,(t-seg.t0)/seg.d)):1,e=ease(k);return[seg.x0+(seg.x1-seg.x0)*e,seg.y0+(seg.y1-seg.y0)*e,k]}
+function paint(x,y){curX=x;curY=y;targetEl.style.translate=x+'px '+y+'px'}
+function loop(now){mvId=0;const p=ballAt(now);paint(p[0],p[1]);
+  if(isHell()&&running&&p[2]<1&&(++trailN%4===0))trailEmber(p[0],p[1]);
+  if(p[2]<1)mvId=requestAnimationFrame(loop)}
+window.moveTo=function(x,y,dur,first){
+  const now=performance.now(),c=first?[x,y]:ballAt(now);
+  seg={x0:c[0],y0:c[1],x1:x,y1:y,t0:now,d:(first||prefersReducedMotion)?0:Math.max(90,dur)};
+  if(first)paint(x,y);
+  if(!mvId)mvId=requestAnimationFrame(loop);
+};
+/* al tocar, se calcula dónde estaba la bola en ese instante exacto (sin teletransportes ni desfases).
+   Tras el golpe la bola NO se detiene: sigue su trayecto mientras se anima el estallido */
+addEventListener('pointerdown',e=>{
+  if(!running||mode!=='click')return;
+  const t=(!e.timeStamp||e.timeStamp>1e11)?performance.now():Math.min(performance.now(),e.timeStamp),p=ballAt(t);
+  curX=p[0];curY=p[1];
+},true);
+
+/* ===== B. Barra de tiempo sin layout (transform en vez de width) ===== */
+const tb=$('timebar');let tbv='';
+new MutationObserver(()=>{const w=tb.style.width;if(w===tbv)return;tbv=w;tb.style.transform='scaleX('+((parseFloat(w)||0)/100)+')'}).observe(tb,{attributes:true,attributeFilter:['style']});
+
+/* ===== C. Chip de dificultad dentro del campo ===== */
+const ah=document.createElement('div');ah.id='arenaHud';ah.innerHTML='<i class="ah-d"></i><span id="ahLv"></span><em id="ahRk" hidden>RANKED</em>';$('arena').appendChild(ah);
+const syncAH=()=>{$('ahLv').textContent=(level+1)+' · '+levels[level].name;$('ahRk').hidden=!ranked};
+const _ap=window.applyTheme;window.applyTheme=function(){_ap();syncAH()};syncAH();
+
+/* ===== D. Títulos: nombres nuevos + solo el #1 actual los conserva ===== */
+const TT=[['Eco del Alba','🌅','Común'],['Guardián del Trébol','🍀','Común'],['Pulso Voltaico','⚡','Poco común'],['Ojo de Halcón Solar','🎯','Raro'],['Heraldo de la Tormenta','⛈️','Raro'],['Cometa Carmesí','☄️','Épico'],['Verdugo del Relámpago','🗡️','Épico'],['Soberano del Vacío','🌌','Legendario'],['Emperador del Infierno','👑','Mítico']];
+function retitle(){
+  document.querySelectorAll('.tx:not([data-v3])').forEach(el=>{
+    const m=/tx-(\d)/.exec(el.className);if(!m)return;
+    const lv=+m[1],d=TT[lv],t=el.querySelector('.tx-t'),ic=el.querySelector('.tx-ic');
+    el.dataset.v3='1';if(t)t.textContent=d[0];if(ic)ic.textContent=d[1];el.title=d[0]+' · '+d[2];
+    if(lv===8)for(let i=0;i<6;i++)el.insertAdjacentHTML('beforeend','<i class="tx-e" style="--x:'+(8+i*16)+'%;--dx:'+((i%2?1:-1)*(4+i*2))+'px;--d:'+(1+i*.22).toFixed(2)+'s"></i>');
+    const rar=el.nextElementSibling;if(rar&&rar.classList.contains('tx-rar'))rar.textContent=d[2];
+  });
+}
+const GQ={champs:{},active:{},ok:false};let fixing=false,gT=0,sT=0;
+function guard(){
+  if(!GQ.ok)return;
+  document.querySelectorAll('#rankList .rank-row').forEach(r=>{
+    const t=r.querySelector('.tx');if(!t)return;
+    const lv=+/tx-(\d)/.exec(t.className)[1],nm=r.querySelector('.nm'),u=nm?nm.textContent:'';
+    if(GQ.champs[lv]===u)return;
+    if(nm){const s=document.createElement('span');s.textContent=u;nm.replaceWith(s)}
+    r.querySelectorAll('.tx,.tx-rar,.fx-rw').forEach(x=>x.remove());r.classList.remove('rt','rt-'+lv);
+  });
+  const rb=$('rbUser'),n=rb&&rb.querySelector('.nm');
+  if(n){const lv=+/nm-(\d)/.exec(n.className)[1];if(GQ.champs[lv]!==rankedUser)rb.textContent=rankedUser}
+}
+async function selfFix(){
+  const me=rankedUser||store.get(RANKED_USER_KEY,''),tok=store.get('gqTitleToken','');
+  if(!me||!db||fixing||!/^[0-9a-f-]{36}$/i.test(tok))return;
+  const act=GQ.active[me],own=Object.keys(GQ.champs).filter(k=>GQ.champs[k]===me).map(Number),sig=own.join(',');
+  let want;
+  if(act!==undefined&&GQ.champs[act]!==me)want=own.length?Math.max(...own):null;   /* te superaron: pierdes el título */
+  else if(act===undefined&&own.length&&store.get('gqAutoSig','')!==sig){store.set('gqAutoSig',sig);want=Math.max(...own)} /* eres el nuevo #1 */
+  else return;
+  fixing=true;
+  try{const r=await db.rpc('equip_title',{p_username:me,p_level:want,p_token:tok});
+    if(r.data==='ok'){toast(want===null?'Te han superado: has perdido el título':'🏆 ¡Eres el nuevo #1! Título asignado');syncT()}}catch(e){}
+  setTimeout(()=>{fixing=false},4000);
+}
+async function syncT(){
+  if(!db)return;
+  try{
+    const [c,a]=await Promise.all([db.rpc('ranked_champions'),db.rpc('ranked_active_titles')]);
+    if(c.error||a.error)return;
+    GQ.champs={};GQ.active={};
+    (c.data||[]).forEach(r=>GQ.champs[r.difficulty]=r.username);(a.data||[]).forEach(r=>GQ.active[r.username]=r.difficulty);
+    GQ.ok=true;guard();selfFix();
+  }catch(e){}
+}
+const rl=$('rankList');
+if(rl){
+  new MutationObserver(()=>{clearTimeout(gT);gT=setTimeout(()=>{retitle();guard()},250)}).observe(rl,{childList:true,subtree:true});
+  new MutationObserver(()=>{clearTimeout(sT);sT=setTimeout(syncT,900)}).observe(rl,{childList:true});
+}
+const mt=$('myTitles');if(mt)new MutationObserver(()=>setTimeout(retitle,60)).observe(mt,{childList:true,subtree:true});
+setTimeout(()=>{retitle();syncT()},2500);setInterval(syncT,60000);
+
+/* ===== E. SONIDO EN TODO ===== */
+const HOV='.primary,.secondary,.mode,.rank-tab,.expand-btn,.mini-btn,.zen-float,.ranked-btn,.cta,.star,.sound-toggle,.rank-row,.review-item';
+let lastH=null,lastS=0;
+const ok=()=>{const n=performance.now();if(n-lastS<50)return false;lastS=n;return true};
+document.addEventListener('pointerover',e=>{
+  if(e.pointerType!=='mouse'||!e.target.closest)return;
+  const b=e.target.closest(HOV);if(!b||b===lastH||b.disabled||!ok())return;lastH=b;
+  const f=1100+((b.className.length*37)%5)*110;voice({f,to:f*1.4,type:'sine',dur:.04,vol:.028});
+},{passive:true});
+document.addEventListener('pointerout',e=>{if(lastH&&!lastH.contains(e.relatedTarget))lastH=null},{passive:true});
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.rank-tab');if(t)voice({f:N(14+(+t.dataset.diff||0)),type:'triangle',dur:.12,vol:.08,cut:3500})},{passive:true});
+document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('field'))voice({f:700,to:1000,type:'sine',dur:.07,vol:.05})});
+const _toast=window.toast;window.toast=function(h){voice({f:880,to:1320,type:'triangle',dur:.12,vol:.06});voice({f:1760,type:'sine',dur:.1,vol:.03,delay:70});return _toast(h)};
+const rm=$('rankedModal');if(rm)new MutationObserver(()=>{const o=rm.classList.contains('open');voice(o?{f:300,to:900,type:'triangle',dur:.18,vol:.07}:{f:800,to:300,type:'triangle',dur:.14,vol:.06})}).observe(rm,{attributes:true,attributeFilter:['class']});
+
+/* click en el fondo: sonido y diseño propios de cada dificultad */
+function bgSnd(l){
+  const v=voice;
+  switch(l){
+    case 0:v({f:520,to:880,type:'sine',dur:.2,vol:.08});v({f:1320,type:'sine',dur:.12,vol:.03,delay:60});break;
+    case 1:[0,4,9].forEach((s,i)=>v({f:N(s+12),type:'triangle',dur:.18,vol:.07,delay:i*45,cut:3500}));break;
+    case 2:v({f:260,to:1100,type:'triangle',dur:.22,vol:.07});break;
+    case 3:v({noise:1,dur:.05,vol:.08,hp:1,cut:3000});v({f:1500,to:700,type:'square',dur:.06,vol:.04});break;
+    case 4:[0,45,100].forEach(d=>v({noise:1,dur:.04,vol:.08,hp:1,cut:2500,delay:d}));v({f:180,to:90,type:'sawtooth',dur:.12,vol:.04,cut:900});break;
+    case 5:v({f:2400,to:160,type:'sawtooth',dur:.22,vol:.05,cut:3500});v({noise:1,dur:.15,vol:.07,cut:3000});break;
+    case 6:v({f:1800,to:120,type:'square',dur:.25,vol:.04,cut:2500});v({f:90,to:50,type:'sine',dur:.2,vol:.2});break;
+    case 7:[0,7,12].forEach((s,i)=>v({f:N(s),type:'sine',dur:.8,vol:.06,delay:i*70,det:i*5}));v({f:N(24),to:N(12),type:'triangle',dur:.5,vol:.03});break;
+    default:v({f:95,to:36,type:'sine',dur:.35,vol:.3});v({noise:1,dur:.3,vol:.1,cut:2200});v({f:70,to:160,type:'sawtooth',dur:.3,vol:.05,cut:700});
+  }
+  if(ranked)v({f:N(19),type:'sine',dur:.25,vol:.05,delay:90});
+}
+const NO='button,a,input,select,textarea,label,summary,h1,h2,h3,p,small,strong,.brand,.tag,.eyebrow,.panel,.arena,.game,[role=button],[role=dialog],dialog,[class*=modal],[class*=overlay],[class*=dialog],[class*=toast]';
+addEventListener('pointerdown',e=>{
+  if(e.button>0||(e.target.closest&&e.target.closest(NO)))return;
+  if(ok())bgSnd(level);
+  if(prefersReducedMotion||document.querySelectorAll('.bgc').length>6)return;
+  const d=document.createElement('div');d.className='bgc';d.dataset.l=level;
+  d.style.setProperty('--x',e.clientX+'px');d.style.setProperty('--y',e.clientY+'px');
+  d.style.setProperty('--c',ranked?'255,200,61':levels[level].rgb);d.innerHTML='<i></i>';
+  B.appendChild(d);setTimeout(()=>d.remove(),850);
+},{passive:true,capture:true});
+});
+</script>
+<!--GQ-PATCH-V5-END-->
+<!--GQ-PATCH-V6-START-->
+<!-- ===== GAZEQUEST · PARCHE v6 =====
+     Se pega DESPUÉS del v5 (el fusionador ya los pone en orden). -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;700&display=swap');
+:root{--g1:#a8e6b0;--g2:#e9fff0;--g3:#5fd9a0;--g4:#bff7ff}
+body{font-family:Figtree,Inter,system-ui,sans-serif}
+h1,h2,h3,.brand strong,.stat strong,.hud strong,.review-average,.rk2 .k-title,.tx{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif}
+.stat strong,.hud strong,.rank-row .pts,.rank-row .pos,#time{font-variant-numeric:tabular-nums}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ---------- Títulos con color fluido (cambia con la dificultad) ---------- */
+@keyframes flow{to{background-position:300% 0}}
+@keyframes flowY{to{background-position:0 300%}}
+@keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-.05em)}}
+@keyframes flick{from{transform:translateY(0) scaleY(1)}to{transform:translateY(-.035em) scaleY(1.05)}}
+.panel-head h2,.review-section .hero h2,.brand strong,.eyebrow,.arena-message strong{background:linear-gradient(100deg,var(--g1),var(--g2),var(--g3),var(--g1)) 0 0/300% 100% repeat-x!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:none!important;animation:flow 9s linear infinite!important}
+h1 span.hz{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;color:inherit!important;animation:none!important;filter:none}
+.hz i{display:inline-block;font-style:normal;background:linear-gradient(100deg,var(--g1),var(--g2),var(--g3),var(--g4),var(--g1)) 0 0/300% 100% repeat-x;-webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform;animation:flow 7s linear infinite,wave 4s ease-in-out infinite;animation-delay:calc(var(--i)*-.4s),calc(var(--i)*-.26s)}
+body.infierno .panel-head h2,body.infierno .eyebrow,body.infierno .brand strong{background-image:linear-gradient(100deg,#fff3a8,#ffb300,#ff4d00,#d10000,#fff3a8)!important}
+body.infierno h1 span.hz{filter:drop-shadow(0 0 14px rgba(255,70,0,.55))}
+body.infierno .hz i{background:linear-gradient(0deg,#c40000,#ff4d00,#ffb300,#fff3a8,#ffb300,#ff4d00,#c40000) 0 0/100% 300% repeat-y;animation:flowY 2.2s linear infinite,flick .6s ease-in-out infinite alternate;animation-delay:calc(var(--i)*-.31s),calc(var(--i)*-.17s)}
+
+/* ---------- Iconos propios (máscara SVG: heredan el color) ---------- */
+.levels .level b::before,.hud>span::before,.tx-ic,.logo::after,.star,.ci,.bi,.ti,.level small::after,.rank-row:nth-child(1) .pos::after{content:"";-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;background:currentColor}
+.levels .level b::before{display:inline-block;width:15px;height:15px;margin-right:7px;vertical-align:-2px}
+.level small::after{position:absolute;right:10px;bottom:9px;width:46px;height:46px;background:var(--level-color);opacity:.13;pointer-events:none}
+.level[data-level="8"] small::after{opacity:.25;background:#ff8a1a}
+body .hud>span:nth-child(n)::before,body.ranked-mode .hud>span:nth-child(n)::before,body.infierno .hud>span:nth-child(n)::before{content:"";width:22px;height:22px;font-size:0;background:var(--accent);filter:drop-shadow(0 0 6px var(--accent))}
+.hud>span:nth-child(1){--ic:var(--iClock)}.hud>span:nth-child(2){--ic:var(--i3)}.hud>span:nth-child(3){--ic:var(--iSpark)}
+body.ranked-mode .hud>span:nth-child(1){--ic:var(--iShield)}body.ranked-mode .hud>span:nth-child(2){--ic:var(--iMedal)}body.ranked-mode .hud>span:nth-child(3){--ic:var(--iCrown)}
+body.infierno .hud>span:nth-child(1){--ic:var(--iHour)}body.infierno .hud>span:nth-child(2){--ic:var(--iSkull)}body.infierno .hud>span:nth-child(3){--ic:var(--i8)}
+body.infierno .hud>span:nth-child(n)::before{background:#ffb300}
+.tx-0 .tx-ic{--ic:var(--i0)}.tx-1 .tx-ic{--ic:var(--i1)}.tx-2 .tx-ic{--ic:var(--i2)}.tx-3 .tx-ic{--ic:var(--i3)}.tx-4 .tx-ic{--ic:var(--i4)}.tx-5 .tx-ic{--ic:var(--i5)}.tx-6 .tx-ic{--ic:var(--i6)}.tx-7 .tx-ic{--ic:var(--i7)}.tx-8 .tx-ic{--ic:var(--iCrown)}
+.tx .tx-ic{display:inline-block;font-size:0;width:14px;height:14px;background:var(--c)}
+.tx-8 .tx-ic{width:16px;height:16px;background:linear-gradient(180deg,#fff7c2,#ff8a1a)}
+.logo{font-size:0}.logo::after{display:block;width:24px;height:24px;--ic:var(--i3)}
+body.infierno .logo{--ic:var(--i8)}body.ranked-mode .logo{--ic:var(--iShield)}
+.ci,.bi,.ti{display:inline-block;width:15px;height:15px;margin-right:8px;vertical-align:-3px}
+.ci{background:var(--accent)}.ti{background:var(--accent);--ic:var(--iSpark)}
+.rank-row:nth-child(1) .pos::after{display:inline-block;width:13px;height:13px;margin-left:5px;vertical-align:-1px;background:#ffd700;--ic:var(--iCrown)}
+.star{font-size:0;width:38px;height:38px;--ic:var(--iStar);-webkit-text-stroke:0}
+.chips span{display:inline-flex;align-items:center}
+
+/* ---------- Diseño: un solo gesto fuerte (retícula + título) y el resto sobrio ---------- */
+.hero{position:relative;max-width:none;padding:60px 0 34px}
+.hero>*:not(.ret){max-width:800px}
+.hero::after{display:none}
+.hero p{font-size:17px;line-height:1.55}
+.ret{position:absolute;right:0;top:18px;width:min(330px,34vw);color:var(--accent);opacity:.6;pointer-events:none}
+.ret .r1,.ret .r2,.ret .r3{transform-box:fill-box;transform-origin:center}
+.ret .r1{animation:spin 90s linear infinite}.ret .r2{animation:spin 55s linear infinite reverse}.ret .r3{animation:dotP 2.6s ease-in-out infinite}
+@media(max-width:760px){.ret{display:none}}
+.top{border-radius:12px;padding:10px 16px}
+.panel{border-radius:10px;--cb:linear-gradient(rgba(var(--accent-rgb),.65),rgba(var(--accent-rgb),.65));background:linear-gradient(180deg,rgba(var(--accent-rgb),.07),transparent 140px),rgba(9,14,11,.95)}
+.panel::after{content:"";position:absolute;inset:6px;pointer-events:none;z-index:2;opacity:.8;background:var(--cb) left top/10px 1px no-repeat,var(--cb) left top/1px 10px no-repeat,var(--cb) right bottom/10px 1px no-repeat,var(--cb) right bottom/1px 10px no-repeat}
+.panel-head h2{font-size:15px;letter-spacing:.01em;font-weight:700}
+.eyebrow{letter-spacing:.14em}
+.level:not([data-level="8"]){border-radius:6px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.level{min-height:98px}
+.primary{border-radius:8px;font-weight:800;letter-spacing:.02em}
+.secondary,.mode,.expand-btn,.field{border-radius:8px}
+.layout::before,.review-section::before{content:"";grid-column:1/-1;display:block;height:14px;margin:0 auto 14px;width:min(100%,760px);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='14'%3E%3Cpath d='M0 7h276M324 7h276' stroke='white' stroke-opacity='.2'/%3E%3Cpath d='M300 1l6 6-6 6-6-6z' fill='white' fill-opacity='.55'/%3E%3Cpath d='M286 7l3-3 3 3-3 3zM308 7l3-3 3 3-3 3z' fill='white' fill-opacity='.3'/%3E%3C/svg%3E") center/100% 14px no-repeat}
+.rl{position:absolute;z-index:1;pointer-events:none;opacity:.5}
+.rh{left:46px;right:46px;top:9px;height:7px;background:repeating-linear-gradient(90deg,rgba(var(--accent-rgb),.7) 0 1px,transparent 1px 10px) 0 100%/100% 4px no-repeat,repeating-linear-gradient(90deg,rgba(var(--accent-rgb),.95) 0 1px,transparent 1px 50px) 0 0/100% 7px no-repeat}
+.rvv{top:46px;bottom:46px;right:9px;width:7px;background:repeating-linear-gradient(0deg,rgba(var(--accent-rgb),.7) 0 1px,transparent 1px 10px) 100% 0/4px 100% no-repeat,repeating-linear-gradient(0deg,rgba(var(--accent-rgb),.95) 0 1px,transparent 1px 50px) 0 0/7px 100% no-repeat}
+.toast .ti{vertical-align:-3px}
+body.lite .ret .r1,body.lite .ret .r2{animation:none}
+</style>
+<script>
+(function(run){document.readyState==='complete'?run():addEventListener('load',run)})(function(){
+if(typeof $==='undefined'||typeof levels==='undefined'){console.error('Pega este bloque al final, antes de </body>');return}
+const EMO=/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,root=document.documentElement;
+
+/* ===== Iconos dibujados a mano (no emojis) ===== */
+const sp=(n,ro,ri)=>{let d='';for(let i=0;i<n*2;i++){const a=Math.PI*i/n-Math.PI/2,r=i%2?ri:ro;d+=(i?'L':'M')+(12+r*Math.cos(a)).toFixed(1)+' '+(12+r*Math.sin(a)).toFixed(1)}return d+'Z'};
+const IC={
+0:['M20 4C10 4 4 9 4 20 15 20 20 15 20 4zM7 17C10 12 13 9 17 7 14 11 11 14 7 17z',1],
+1:['M4 8.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 1 0-9 0zM11 8.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 1 0-9 0zM7.5 14.5a4.5 4.5 0 1 0 9 0 4.5 4.5 0 1 0-9 0zM11 18h2v5h-2z',0],
+2:['M13 2 5 13.5h5.5L9.5 22 19 9.5h-5.7z',0],
+3:['M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',1],
+4:[sp(8,11.5,5),0],
+5:['M9.5 15.5a6 6 0 1 0 12 0 6 6 0 1 0-12 0zM2 2l9 5-4 4zM2 9l6 2-2 4z',0],
+6:['M1 22 8.5 10h7L23 22zM9 7.5C9 4.5 12 4 12 1.5 14.5 3 15 5.5 15 7.5z',0],
+7:['M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 3.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',1],
+8:['M12 1.5C13 6 18 8 18 14a6 6 0 0 1-12 0c0-2.5 1-4 2.5-5.5.2 2 1 3 2 3.5C10.5 8.5 11 5 12 1.5z',0],
+Clock:['M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm-1 2.5v5.2l3.8 2.2 1-1.7-2.8-1.6V7.5z',1],
+Spark:[sp(4,11.5,3),0],Star:[sp(5,11.5,4.8),0],
+Shield:['M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z',0],
+Medal:['M12 9a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM6.5 2h4l1.5 5-2.2.9zM17.5 2h-4L12 7l2.2.9z',0],
+Crown:['M2 7l5 4.5L12 3l5 8.5L22 7l-2 13H4z',0],
+Hour:['M6 2h12v4.5L13.5 12 18 17.5V22H6v-4.5L10.5 12 6 6.5z',0],
+Skull:['M12 2a8.5 8.5 0 0 0-8.5 8.5c0 3 1.5 5 3.5 6.2V21h3v-2h4v2h3v-4.3c2-1.2 3.5-3.2 3.5-6.2A8.5 8.5 0 0 0 12 2zM8.5 9.5a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4zm7 0a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z',1],
+X:['M5 7.5 7.5 5 12 9.5 16.5 5 19 7.5 14.5 12 19 16.5 16.5 19 12 14.5 7.5 19 5 16.5 9.5 12z',0]
+};
+Object.keys(IC).forEach(k=>{const[d,eo]=IC[k];root.style.setProperty('--i'+k,'url("data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill-rule='"+(eo?'evenodd':'nonzero')+"' d='"+d+"'/></svg>")+'")')});
+document.querySelectorAll('.level').forEach((b,i)=>b.style.setProperty('--ic','var(--i'+i+')'));
+document.querySelectorAll('.star').forEach(s=>s.style.setProperty('--ic','var(--iStar)'));
+
+/* ===== Paletas del título por dificultad ===== */
+const PAL=[['#a8e6b0','#e9fff0','#5fd9a0','#bff7ff'],['#c4e78a','#f6ffd8','#8fe07a','#ffe98a'],['#f0bd69','#fff0c9','#ffd23f','#ff9a5a'],['#f39b55','#ffe3c8','#ff7a4a','#ffd0a0'],['#f16e55','#ffd0c6','#ff4d6d','#ffa07a'],['#ed4b57','#ff9bb0','#ffffff','#ff6a3a'],['#ff263f','#ffb0b8','#ffffff','#ff6a00'],['#a64bba','#6ee7ff','#ff7ae0','#d9a8ff'],['#fff3a8','#ffb300','#ff4d00','#d10000']];
+function splitH1(){
+  const s=document.querySelector('h1 span');if(!s||s.dataset.z)return;
+  s.dataset.z='1';s.classList.add('hz');s.innerHTML=[...s.textContent].map((c,i)=>'<i style="--i:'+i+'">'+c+'</i>').join('');
+}
+function strip(el){const t=el.textContent,n=t.replace(EMO,'');if(n!==t)el.textContent=n.replace(/\s+/g,' ').trim()}
+const _ap=window.applyTheme;
+window.applyTheme=function(){
+  _ap();
+  const p=PAL[level];p.forEach((c,i)=>root.style.setProperty('--g'+(i+1),c));
+  splitH1();document.title=document.title.replace(EMO,'').trim();
+};
+splitH1();window.applyTheme();
+
+/* ===== Decoraciones propias ===== */
+const hero=document.querySelector('.hero');
+if(hero&&!hero.querySelector('.ret'))hero.insertAdjacentHTML('afterbegin','<svg class="ret" viewBox="0 0 200 200" fill="none" stroke="currentColor" aria-hidden="true"><g class="r1"><circle cx="100" cy="100" r="94" stroke-opacity=".35" stroke-dasharray="1 5.9"/><circle cx="100" cy="100" r="86" stroke-opacity=".5" stroke-dasharray="40 14 4 14"/></g><g class="r2"><circle cx="100" cy="100" r="66" stroke-opacity=".55" stroke-dasharray="2 8"/><path d="M100 26v14M100 160v14M26 100h14M160 100h14" stroke-width="2"/></g><circle cx="100" cy="100" r="40" stroke-opacity=".4"/><g class="r3"><path d="M100 70l5 5-5 5-5-5zM100 120l5 5-5 5-5-5z" fill="currentColor" stroke="none"/></g><circle cx="100" cy="100" r="3" fill="currentColor" stroke="none"/></svg>');
+$('arena').insertAdjacentHTML('beforeend','<i class="rl rh"></i><i class="rl rvv"></i>');
+const chips=document.querySelector('.chips');
+if(chips)chips.innerHTML=[['2','9 niveles'],['Medal','Ranked en vivo'],['3','Reacción y seguimiento'],['Star','XP y títulos']].map(c=>'<span><i class="ci" style="--ic:var(--i'+c[0]+')"></i>'+c[1]+'</span>').join('');
+
+/* botón Ranked con icono propio */
+const rb=$('rankedBtn');
+function fixRb(){const x=/Salir/.test(rb.textContent);rb.dataset.x=String(x);rb.innerHTML='<i class="bi" style="--ic:var(--i'+(x?'X':'Shield')+')"></i>'+(x?'Salir de Ranked':'Ranked')}
+new MutationObserver(()=>{if(rb.querySelector('.bi')&&rb.dataset.x===String(/Salir/.test(rb.textContent)))return;fixRb()}).observe(rb,{childList:true,characterData:true,subtree:true});
+fixRb();
+
+/* sin emojis en textos dinámicos, avisos y ventanas */
+['ratingLabel','resultText','reviewNotice'].forEach(id=>{const e=$(id);if(!e)return;new MutationObserver(()=>strip(e)).observe(e,{childList:true,characterData:true,subtree:true});strip(e)});
+['rankedBanner','rankedModal'].forEach(id=>{const e=$(id);if(!e)return;const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())n.nodeValue=n.nodeValue.replace(EMO,'')});
+const _t=window.toast;window.toast=function(h){return _t('<i class="ti"></i>'+String(h).replace(EMO,'').trim())};
+});
+</script>
+<!--GQ-PATCH-V6-END-->
+<!--GQ-PATCH-V7-START-->
+<style>
+/* v7 · título en una sola línea en móvil */
+@media(max-width:760px){h1{white-space:nowrap;font-size:min(7.2vw,56px);letter-spacing:-.04em}}
+
+/* v7 · palabra INFIERNO con fuego propio (poco denso) */
+body.infierno h1 span.hw{position:relative;display:inline-block;background:linear-gradient(0deg,#d62200 0,#ff5a14 30%,#ffb300 62%,#fff3a8 100%) 0 0/100% 220%!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:hwHeat 1.6s ease-in-out infinite alternate!important;filter:drop-shadow(0 0 10px rgba(255,80,0,.55))!important}
+@keyframes hwHeat{to{background-position:0 100%}}
+.hw svg{position:absolute;left:4%;width:92%;bottom:80%;height:.48em;overflow:visible;pointer-events:none}
+.hw .hwl{transform-box:fill-box;transform-origin:50% 100%;opacity:.85;animation:hwFl var(--d) ease-in-out var(--l) infinite alternate}
+@keyframes hwFl{from{transform:scale(.8,.65) skewX(-6deg);opacity:.5}to{transform:scale(1.05,1.15) skewX(5deg);opacity:.95}}
+
+/* v7 · MODO RANKED: tema de competición completo */
+body.ranked-mode{background:repeating-linear-gradient(115deg,rgba(255,200,60,.035) 0 2px,transparent 2px 22px),radial-gradient(ellipse 70% 45% at 50% -10%,rgba(255,200,60,.28),transparent 60%),radial-gradient(ellipse 60% 40% at 0% 100%,rgba(190,20,50,.38),transparent 60%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(40,90,220,.3),transparent 60%),#05060b}
+body.ranked-mode::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:linear-gradient(180deg,#ff3a5a,#ffc83d 50%,#ff3a5a) left/5px 100% no-repeat,linear-gradient(180deg,#3a6aff,#ffc83d 50%,#3a6aff) right/5px 100% no-repeat}
+body.ranked-mode .top{border-color:rgba(255,200,60,.55);border-radius:0;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);background:linear-gradient(90deg,rgba(150,15,40,.55),rgba(10,10,16,.94) 40%,rgba(30,60,170,.5))}
+body.ranked-mode h1{font-style:italic;transform:skewX(-6deg);transform-origin:left bottom}
+body.ranked-mode .level.active{box-shadow:0 0 0 1px var(--level-color),0 0 26px rgba(var(--level-rgb),.45)}
+body.ranked-mode .stat{border-radius:0;border-color:rgba(255,200,60,.3);clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%)}
+body.ranked-mode .panel-head{background:linear-gradient(90deg,rgba(190,20,50,.3),rgba(255,200,60,.1) 55%,rgba(40,90,220,.26))}
+body.ranked-mode .rank-row{border-radius:0;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+body.ranked-mode .foot{color:#ffd76a}
+#rkTicker{display:none}
+body.ranked-mode #rkTicker{display:block;overflow:hidden;margin:0 0 16px;border-block:1px solid rgba(255,200,60,.45);background:linear-gradient(90deg,rgba(190,20,50,.25),rgba(255,200,60,.08),rgba(40,90,220,.25));font-size:11px;font-weight:800;letter-spacing:.2em;color:#ffe9a8;padding:8px 0}
+#rkTicker .rt-in{display:flex;width:max-content;white-space:nowrap;animation:rtk 24s linear infinite}
+#rkTicker span::after{content:"";display:inline-block;width:7px;height:7px;background:#ffc83d;transform:rotate(45deg);margin:0 34px;vertical-align:middle}
+@keyframes rtk{to{transform:translateX(-25%)}}
+body.playing #rkTicker .rt-in{animation-play-state:paused}
+
+/* v7 · cortinas de transición al entrar/salir de Ranked */
+.rw{position:fixed;inset:0;z-index:490;pointer-events:none;overflow:hidden}
+.rw i{position:absolute;top:-5%;bottom:-5%;width:58%;animation:rwA 1.3s cubic-bezier(.7,0,.3,1) forwards}
+.rw .a{left:-4%;background:linear-gradient(90deg,#4a0616,#d6193f);border-right:6px solid #ffc83d;--s:-130%}
+.rw .b{right:-4%;background:linear-gradient(270deg,#0e1f66,#2f5bff);border-left:6px solid #ffc83d;--s:130%}
+.rw.off .a{background:linear-gradient(90deg,#1a1a22,#4a4a5a);border-color:#ff5a5a}
+.rw.off .b{background:linear-gradient(270deg,#2a0a0a,#8a1a1a);border-color:#ff5a5a}
+@keyframes rwA{0%{transform:translateX(var(--s)) skewX(-12deg)}35%,60%{transform:translateX(0) skewX(-12deg)}100%{transform:translateX(var(--s)) skewX(-12deg)}}
+
+/* v7 · anti-lag: sin cambiar el aspecto */
+body.scrolling .wrap *,body.scrolling .wrap *::before,body.scrolling .wrap *::after,body.scrolling .ambient-layer *,body.tabhid *,body.tabhid *::before,body.tabhid *::after{animation-play-state:paused!important}
+.review-item,.history-item{contain:layout style paint}
+.foot{content-visibility:auto;contain-intrinsic-size:auto 80px}
+body.playing .cursor-glow,body.playing .ambient-layer,body.playing .tt-fire,body.playing .fx-bd{display:none}
+</style>
+<script>
+/* v7 */
+(function(run){document.readyState==='complete'?run():addEventListener('load',run)})(function(){
+if(typeof $==='undefined'||typeof levels==='undefined'||typeof voice==='undefined'){console.error('v7: faltan los bloques anteriores');return}
+var B=document.body,H=document.querySelector('h1');
+
+/* 1. INFIERNO: palabra con fuego propio, sin emojis */
+function flames(){
+  var p='<svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hwg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff3d00"/><stop offset=".6" stop-color="#ffa000"/><stop offset="1" stop-color="#fff3a8"/></linearGradient></defs>';
+  [10,28,46,64,82].forEach(function(a,i){
+    p+='<path class="hwl" style="--d:'+(0.6+(i%3)*0.2).toFixed(1)+'s;--l:-'+(i*0.23).toFixed(2)+'s" fill="url(#hwg)" d="M'+a+' 30C'+(a-5)+' 21 '+(a-2)+' 12 '+a+' 2C'+(a+4)+' 12 '+(a+8)+' 21 '+(a+6)+' 30Z"/>';
+  });
+  return p+'</svg>';
+}
+function hellTitle(){
+  if(level!==8||ranked||H.querySelector('.hw'))return;
+  H.textContent='Sobrevive al ';
+  var s=document.createElement('span');s.className='hw';s.dataset.z='1';
+  s.innerHTML='infierno.'+flames();H.appendChild(s);
+}
+var _a=window.applyTheme;
+window.applyTheme=function(){_a();hellTitle()};
+hellTitle();
+
+/* 2. RANKED: cinta animada + cortinas */
+var bn=$('rankedBanner');
+if(bn&&!$('rkTicker')){
+  var tk=document.createElement('div');tk.id='rkTicker';tk.setAttribute('data-chrome','');
+  var u='<span>RANKED</span><span>TEMPORADA 1</span><span>COMPITE</span><span>SUBE</span><span>DOMINA</span><span>SIN EXCUSAS</span>';
+  tk.innerHTML='<div class="rt-in">'+u+u+u+u+'</div>';bn.after(tk);
+}
+function wipe(on){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var w=document.createElement('div');w.className='rw'+(on?'':' off');
+  w.innerHTML='<i class="a"></i><i class="b"></i>';B.appendChild(w);
+  setTimeout(function(){w.remove()},1500);
+}
+var _ri=window.rankIntro;
+window.rankIntro=function(on){wipe(on);if(_ri)_ri(on)};
+
+/* 3. SONIDOS: épico al entrar, de salida al salir */
+var N2=N;
+Object.assign(sfx,{
+  rkOn:function(){
+    var v=voice,b=function(d,vol){v({f:95,to:34,type:'sine',dur:.5,vol:vol,delay:d})};
+    v({f:40,to:620,type:'sawtooth',dur:1.7,vol:.08,cut:1800,att:1.2});
+    v({noise:1,dur:1.7,vol:.07,hp:1,cut:900,att:1.3});
+    [0,380,760,1100,1400].forEach(function(d,i){b(d,.22+i*.06)});
+    b(1700,.8);v({noise:1,dur:1,vol:.13,cut:3800,delay:1700});
+    [-12,-5,0,4,7].forEach(function(s,i){v({f:N2(s),type:'sawtooth',dur:1.8,vol:.055,cut:2200,att:.04,delay:1720+i*15,det:i%2?7:-7})});
+    [12,16,19].forEach(function(s,i){v({f:N2(s),type:'triangle',dur:2,vol:.05,att:.5,delay:1800+i*40})});
+    [12,16,19,24,28,31,36].forEach(function(s,i){v({f:N2(s),type:'triangle',dur:.3,vol:.08,cut:4200,delay:2600+i*110})});
+    b(3400,.7);
+    [0,7,12,16,19].forEach(function(s,i){v({f:N2(s),type:'sawtooth',dur:1,vol:.055,cut:2400,delay:3400+i*15})});
+    v({noise:1,dur:1.2,vol:.1,hp:1,cut:5500,delay:3400});
+  },
+  rkOff:function(){
+    var v=voice;
+    v({f:900,to:55,type:'sawtooth',dur:.95,vol:.08,cut:2000});
+    v({f:95,to:30,type:'sine',dur:.6,vol:.6,delay:80});
+    v({noise:1,dur:.6,vol:.1,cut:1600,delay:120});
+    [-12,-9].forEach(function(s,i){v({f:N2(s),type:'sawtooth',dur:1,vol:.06,cut:700,delay:350+i*20})});
+    v({f:N2(12),type:'triangle',dur:.12,vol:.07,delay:1000});
+    v({f:N2(7),type:'triangle',dur:.12,vol:.07,delay:1120});
+    v({f:N2(0),type:'sine',dur:.35,vol:.08,delay:1240});
+  }
+});
+
+/* 4. ANTI-LAG: pausa las animaciones decorativas al hacer scroll o con la pestaña oculta */
+var st=0;
+addEventListener('scroll',function(){B.classList.add('scrolling');clearTimeout(st);st=setTimeout(function(){B.classList.remove('scrolling')},160)},{passive:true});
+document.addEventListener('visibilitychange',function(){B.classList.toggle('tabhid',document.hidden)});
+});
+</script>
+<!--GQ-PATCH-V7-END-->
 </body>
-  </html>
+</html>
