@@ -2676,5 +2676,182 @@ document.addEventListener('visibilitychange',function(){B.classList.toggle('tabh
 });
 </script>
 <!--GQ-PATCH-V7-END-->
+<!--GQ8-START-->
+<style>
+/* v8: sin retrasos de aparicion */
+.rv:not(.in){opacity:1!important}
+.rv.in,.level,.history-item,.rank-row,.review-item,.chips span,#rankedBanner{animation:none!important}
+.modal{animation-duration:.16s!important}.toast{transition-duration:.18s!important}
+.review-section,.foot{content-visibility:visible!important}
+/* v8: anti-lag (se quitan animaciones que repintan texto y capas enormes) */
+body::before{display:none!important}
+.hz i,.panel-head h2,.review-section .hero h2,.brand strong,.eyebrow,.arena-message strong,.tx::after,.tx-t,.nm,.xp-bar i,.result h3,.hud>span::after,.rank-fx .beam,.panel::before,.cta::after,.primary::after{animation:none!important}
+.hz i{will-change:auto!important;background-position:calc(var(--i)*13%) 0!important}
+body.playing .wrap :not(.arena):not(.arena *),body.playing .wrap :not(.arena):not(.arena *)::before,body.playing .wrap :not(.arena):not(.arena *)::after,body.ultra .wrap :not(.arena):not(.arena *),body.ultra .wrap :not(.arena):not(.arena *)::before,body.ultra .wrap :not(.arena):not(.arena *)::after,body.ultra .ambient-layer *{animation:none!important}
+/* v8: estrellas de quien ya voto */
+.stars.voted .star{cursor:default}
+.stars.voted .star.active{color:var(--star-color,#ffd700)!important;filter:drop-shadow(0 0 7px currentColor) drop-shadow(0 0 16px currentColor);animation:gqV 2.6s ease-in-out infinite!important;animation-delay:calc(var(--i,0)*.18s)!important}
+@keyframes gqV{0%,100%{transform:translateY(0) scale(1) rotate(0)}30%{transform:translateY(-6px) scale(1.14) rotate(-8deg)}60%{transform:translateY(0) scale(1.04) rotate(5deg)}}
+.gqSeal{display:none;position:relative;overflow:hidden;width:max-content;align-items:center;gap:8px;margin:2px 0 8px;padding:5px 14px 5px 10px;border-radius:99px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1b1200;background:linear-gradient(100deg,#ffe08a,#ffc83d 55%,#ff9a1a);box-shadow:0 0 18px rgba(255,200,60,.45)}
+.gqSeal.on{display:inline-flex;animation:gqIn .5s cubic-bezier(.2,.9,.25,1.4)}
+@keyframes gqIn{from{transform:scale(.4) rotate(-8deg);opacity:0}}
+.gqSeal i{width:14px;height:14px;border-radius:50%;background:#1b1200;position:relative}
+.gqSeal i::after{content:"";position:absolute;left:4px;top:2px;width:3px;height:7px;border:solid #ffd23f;border-width:0 2px 2px 0;transform:rotate(40deg)}
+.gqSeal::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-120%);animation:gqSw 3s ease-in-out infinite}
+@keyframes gqSw{60%,100%{transform:translateX(120%)}}
+</style>
+<script>
+(function(run){document.readyState==='complete'?run():addEventListener('load',run)})(function(){
+try{
+if(typeof $==='undefined'||typeof voice==='undefined'){console.error('GQ8: faltan los bloques anteriores');return}
+var B=document.body;
+
+/* 1. RANKED en PC: el clic rapido ya no se pierde y Espacio/Enter no reactivan el ultimo boton pulsado */
+addEventListener('pointerdown',function(){try{suppressUntil=0}catch(e){}},true);
+addEventListener('keyup',function(e){if(e.key===' '&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))e.preventDefault()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(b&&e.detail>0&&!b.classList.contains('star'))setTimeout(function(){b.blur()},0)},true);
+var u=$('rankedUser');if(u)u.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('rankedConfirm').click()}});
+/* la intro de Ranked se salta con clic, Esc o Enter */
+function sk(){document.querySelectorAll('.rk2,.rw').forEach(function(x){x.remove()})}
+addEventListener('pointerdown',sk,true);
+addEventListener('keydown',function(e){if(e.key==='Escape'||e.key==='Enter')sk()},true);
+
+/* 2. Audio de mayor calidad: compresor + reverb sintetica + eco suave */
+var G=null;
+window.gqGraph=function(c){
+  if(G&&G.c===c)return G.n;
+  var m=c.createGain(),k=c.createDynamicsCompressor();
+  m.gain.value=.9;k.threshold.value=-14;k.knee.value=18;k.ratio.value=5;k.attack.value=.004;k.release.value=.2;
+  m.connect(k);k.connect(c.destination);
+  if(!B.classList.contains('lite')){
+    var L=c.sampleRate*1.4|0,ir=c.createBuffer(2,L,c.sampleRate);
+    for(var ch=0;ch<2;ch++){var d=ir.getChannelData(ch);for(var i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,3)}
+    var cv=c.createConvolver(),w=c.createGain();cv.buffer=ir;w.gain.value=.22;m.connect(cv);cv.connect(w);w.connect(k);
+  }
+  var d2=c.createDelay(),fb=c.createGain(),w2=c.createGain();
+  d2.delayTime.value=.16;fb.gain.value=.22;w2.gain.value=.12;
+  m.connect(d2);d2.connect(fb);fb.connect(d2);d2.connect(w2);w2.connect(k);
+  G={c:c,n:m};return m;
+};
+var S=sfx.send;
+sfx.send=function(){S();[0,4,7,12,16,19,24].forEach(function(s,i){voice({f:N(s+12),type:'sine',dur:.5,vol:.07,delay:300+i*70});voice({f:N(s+24),type:'triangle',dur:.3,vol:.025,delay:310+i*70})})};
+
+/* 3. Estrellas para quien ya voto: doradas, con latido, sello y destellos */
+var sb=document.querySelector('.stars'),seal=document.createElement('div');
+if(sb){
+  seal.className='gqSeal';seal.innerHTML='<i></i>Voto registrado';sb.after(seal);
+  var U=window.updateReviewStars;
+  window.updateReviewStars=function(a){
+    U.call(this,a);
+    var v=!!store.get(VOTE_KEY,'');
+    sb.classList.toggle('voted',v);seal.classList.toggle('on',v);
+    if(v&&!sb._d){
+      sb._d=1;[].forEach.call(sb.children,function(s,i){s.style.setProperty('--i',i)});
+      if(a!==false&&typeof starBurst==='function')setTimeout(function(){starBurst(sb,(getComputedStyle(sb.children[0]).getPropertyValue('--star-color')||'#ffd700').trim(),26)},200);
+    }
+  };
+  window.updateReviewStars(false);
+}
+
+/* 4. Vigilante de rendimiento: si hay menos de 42 fps en reposo, activa el modo ultraligero */
+var n=0,t0=performance.now();
+(function f(t){
+  if(!document.hidden&&!B.classList.contains('ultra')){n++;if(t-t0>2500){if(n*1000/(t-t0)<42)B.classList.add('lite','ultra');n=0;t0=t}}
+  else{t0=t;n=0}
+  requestAnimationFrame(f);
+})(t0);
+}catch(err){console.error('GQ8',err)}
+});
+</script>
+<!--GQ8-END-->
+<!--GQ9-START-->
+<style>
+
+/* ranked + infierno: recupera el tema Ranked */
+body.ranked-mode.infierno{background:repeating-linear-gradient(115deg,rgba(255,200,60,.035) 0 2px,transparent 2px 22px),radial-gradient(ellipse 70% 45% at 50% -10%,rgba(255,200,60,.28),transparent 60%),radial-gradient(ellipse 60% 40% at 0% 100%,rgba(190,20,50,.38),transparent 60%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(40,90,220,.3),transparent 60%),#05060b}
+body.ranked-mode.infierno .panel{background:linear-gradient(145deg,rgba(24,21,14,.96),rgba(8,9,14,.98));border-color:rgba(255,200,60,.42);box-shadow:0 26px 60px -26px #000c,inset 0 1px 0 rgba(255,255,255,.07)}
+body.ranked-mode.infierno .primary{background:linear-gradient(135deg,#ffe08a,#ffc83d 50%,#e08a00);color:#1b1200}
+body.ranked-mode.infierno .arena-fire,body.ranked-mode.infierno .hell-layer{display:none}
+body.ranked-mode.infierno .arena{--accent:#ffc83d;--accent-rgb:255,200,61;background:var(--brk),var(--spot),radial-gradient(ellipse 80% 70% at 50% 45%,rgba(255,200,61,.12),transparent 70%),radial-gradient(ellipse 90% 60% at 50% 125%,rgba(255,90,20,.14),transparent 65%),linear-gradient(165deg,#0d1017,#05070b 85%)}
+body.ranked-mode.infierno .hud>span{border:0;border-radius:0;padding-left:52px;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);background:linear-gradient(100deg,rgba(190,20,50,.4),rgba(255,200,60,.16) 55%,rgba(40,90,220,.36));box-shadow:inset 0 0 0 1px rgba(255,200,60,.55)}
+body.ranked-mode.infierno .hud>span::after{display:none}
+body.ranked-mode.infierno .hud>span:nth-child(1){--ic:var(--iShield)}
+body.ranked-mode.infierno .hud>span:nth-child(2){--ic:var(--iMedal)}
+body.ranked-mode.infierno .hud>span:nth-child(3){--ic:var(--iCrown)}
+body.ranked-mode.infierno .hud>span:nth-child(n)::before{background:#ffc83d}
+body.ranked-mode.infierno .hud strong{color:#ffd76a;text-shadow:0 0 14px rgba(255,200,61,.6)}
+body.ranked-mode.infierno #arenaHud{border-color:rgba(255,200,61,.5);background:rgba(255,200,61,.12)}
+body.ranked-mode.infierno .panel-head h2,body.ranked-mode.infierno .brand strong{background-image:linear-gradient(100deg,#ffe9a8,#ffc83d,#fff6c9,#ffe9a8)!important}
+body.ranked-mode.infierno .eyebrow{background-image:linear-gradient(100deg,#ff6b6b,#ffd0d0,#ff6b6b)!important}
+
+/* titulo animado por letras */
+html body h1 span.gx{position:relative;display:inline-block;isolation:isolate;background:none!important;color:inherit!important;text-shadow:none!important;animation:none!important;filter:drop-shadow(0 0 16px rgba(var(--accent-rgb),.4))!important}
+body.lite h1 span.gx{filter:none!important}
+.gx .gl{display:inline-block;font-style:normal;position:relative;z-index:1;color:transparent;will-change:transform;background:linear-gradient(100deg,var(--g1,#a8e6b0),var(--g2,#e9fff0),var(--g3,#5fd9a0),var(--g4,#bff7ff),var(--g1,#a8e6b0)) calc(var(--i)*13%) 0/320% 100%;-webkit-background-clip:text;background-clip:text;animation:gIn .7s cubic-bezier(.2,.9,.2,1) backwards,var(--an) var(--du) ease-in-out infinite;animation-delay:calc(var(--i)*70ms),calc(var(--i)*var(--st) - var(--du))}
+@keyframes gIn{from{opacity:0;filter:blur(8px)}}
+.gx-l0 .gl{--an:gq0;--du:4.2s;--st:.28s}
+.gx-l1 .gl{--an:gq1;--du:3.4s;--st:.24s}
+.gx-l2 .gl{--an:gq2;--du:2.4s;--st:.16s}
+.gx-l3 .gl{--an:gq3;--du:1.7s;--st:.12s}
+.gx-l4 .gl{--an:gq4;--du:1.3s;--st:.09s}
+.gx-l5 .gl{--an:gq5;--du:1.1s;--st:.07s}
+.gx-l6 .gl{--an:gq6;--du:.8s;--st:.05s}
+.gx-l7 .gl{--an:gq7;--du:5s;--st:.35s}
+.gx-r .gl{--an:gqR;--du:2.6s;--st:.12s}
+@keyframes gq0{50%{transform:translateY(-.07em)}}
+@keyframes gq1{30%{transform:translateY(-.08em) rotate(-5deg)}70%{transform:translateY(.02em) rotate(4deg)}}
+@keyframes gq2{35%{transform:translateY(-.14em) scale(1.1,1.14)}55%{transform:scale(1.06,.9)}75%{transform:none}}
+@keyframes gq3{25%{transform:translateX(.06em) skewX(-12deg)}50%{transform:scaleY(1.06)}75%{transform:translateX(-.05em) skewX(10deg)}}
+@keyframes gq4{20%{transform:translate(.025em,-.05em) scale(1.06,1.1)}40%{transform:translate(-.03em,.02em) scale(.97)}60%{transform:translate(.02em,-.03em) scale(1.04,1.08)}80%{transform:translate(-.02em,.03em)}}
+@keyframes gq5{35%{transform:translateY(-.06em) scale(1.04)}70%{transform:none;opacity:1}76%{transform:translate(-.07em,.02em) skewX(16deg);opacity:.75}82%{transform:translate(.08em,-.03em) skewX(-18deg) scaleX(1.12);opacity:1}88%{transform:translate(-.04em,.01em);opacity:.5}94%{transform:translate(.03em,0) skewX(5deg);opacity:1}}
+@keyframes gq6{15%{transform:translate(-.04em,-.05em) rotate(-4deg) scale(1.1)}30%{transform:translate(.05em,.02em) rotate(3deg)}45%{transform:translate(-.02em,.05em) rotate(-2deg) scale(.95)}60%{transform:translate(.04em,-.04em) rotate(5deg) scale(1.08)}80%{transform:translate(-.05em,0) rotate(-3deg)}}
+@keyframes gq7{25%{transform:perspective(500px) translateY(-.08em) rotateY(180deg) scale(1.05);opacity:.55}50%{transform:perspective(500px) rotateY(360deg);opacity:1}75%{transform:perspective(500px) translateY(.04em) rotateX(25deg);opacity:.8}}
+@keyframes gqR{8%{transform:translateY(-.12em) scale(1.14)}16%{transform:none}}
+
+/* INFIERNO: fuego en dos capas, brasas, resplandor y letras de lava */
+html body h1 span.gx-h{filter:drop-shadow(0 0 14px rgba(255,80,0,.6))!important}
+.gx-h .gl{--an:ghf;--du:.9s;--st:.11s;background:linear-gradient(0deg,#9c1200 0,#e02a00 22%,#ff6a14 48%,#ffb300 74%,#fff3a8 100%) 0 0/100% 100%;transform-origin:50% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+/*GQ-FIX-INFIERNO*/
+html body .gx-h .gl{-webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;color:transparent!important}
+@keyframes ghf{0%{transform:scaleY(.97) skewX(-1.5deg)}100%{transform:scaleY(1.08) translateY(-.02em) skewX(2deg)}}
+.gx-glow{position:absolute;left:-8%;right:-8%;bottom:-10%;height:95%;z-index:-1;background:radial-gradient(ellipse 60% 70% at 50% 80%,rgba(255,90,20,.6),transparent 70%);animation:gGl 1.4s ease-in-out infinite alternate}
+@keyframes gGl{from{opacity:.55;transform:scale(.95)}to{opacity:1;transform:scale(1.06)}}
+.gx-fire{position:absolute;left:-3%;right:-3%;bottom:58%;height:.8em;z-index:0;pointer-events:none}
+.gx-fire.f2{bottom:46%;height:.5em;z-index:2;opacity:.55}
+.gf{position:absolute;bottom:0;left:var(--x);width:var(--w);height:var(--h);margin-left:calc(var(--w)/-2);border-radius:50% 50% 42% 42%/72% 72% 28% 28%;background:radial-gradient(ellipse 50% 72% at 50% 100%,rgba(255,230,120,.98) 0,rgba(255,130,22,.85) 32%,rgba(205,36,0,.5) 62%,rgba(120,0,0,0) 80%);transform-origin:50% 100%;animation:gfl var(--d) ease-in-out var(--l) infinite alternate}
+@keyframes gfl{0%{transform:scale(.85,.6) skewX(-5deg);opacity:.65}50%{transform:scale(1,1.15) skewX(4deg);opacity:1}100%{transform:scale(1.05,.8) skewX(-2deg);opacity:.8}}
+.ge{position:absolute;left:var(--x);bottom:35%;width:.06em;height:.06em;border-radius:50%;background:#ffd27a;box-shadow:0 0 6px #ff5a14;opacity:0;z-index:3;animation:geU var(--d) linear var(--l) infinite}
+@keyframes geU{0%{opacity:0;transform:translate(0,0) scale(1)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-1.3em) scale(.2)}}
+body.playing .gx *{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.gx .gl,.gf,.ge,.gx-glow{animation:none!important}}
+
+</style>
+<script>
+
+(function(run){document.readyState==='complete'?run():addEventListener('load',run)})(function(){
+if(typeof applyTheme!=='function'||typeof level==='undefined'){console.error('GQ9: pega el HTML completo de GazeQuest');return}
+var h=document.querySelector('h1'),RK=['#fff6c9','#ffc83d','#ff7a18','#ff3a5a'];
+function fire(n,o){var t='';for(var i=0;i<n;i++)t+='<i class="gf" style="--x:'+(o.x+i*o.s)+'%;--w:'+(o.w+(i*7%5)*.035).toFixed(2)+'em;--h:'+(o.h+(i*11%7)*o.k).toFixed(2)+'em;--d:'+(.55+(i%4)*.17).toFixed(2)+'s;--l:-'+(i*.31).toFixed(2)+'s"></i>';return t}
+function build(){
+ var s=h&&h.querySelector('span');if(!s)return;
+ var w=s.textContent.replace(/\s+/g,' ').trim(),hell=level===8&&!ranked,html='',i;
+ s.className='gx '+(ranked?'gx-r':hell?'gx-h':'gx-l'+level);
+ s.removeAttribute('style');s.setAttribute('aria-label',w);
+ if(ranked)RK.forEach(function(c,k){s.style.setProperty('--g'+(k+1),c)});
+ if(hell)html+='<span class="gx-glow"></span><span class="gx-fire" aria-hidden="true">'+fire(12,{x:4,s:8.4,w:.16,h:.38,k:.07})+'</span>';
+ for(i=0;i<w.length;i++)html+='<em class="gl" style="--i:'+i+'">'+w.charAt(i)+'</em>';
+ if(hell){
+  html+='<span class="gx-fire f2" aria-hidden="true">'+fire(6,{x:10,s:16,w:.14,h:.2,k:.04})+'</span>';
+  for(i=0;i<9;i++)html+='<b class="ge" aria-hidden="true" style="--x:'+(8+i*10.5)+'%;--dx:'+((i%2?1:-1)*(.08+i*.02)).toFixed(2)+'em;--d:'+(1.2+i*.23).toFixed(2)+'s;--l:-'+(i*.37).toFixed(2)+'s"></b>';
+ }
+ s.innerHTML=html;
+}
+var A=window.applyTheme;
+window.applyTheme=function(){A.apply(this,arguments);build()};
+window.applyTheme();
+});
+
+</script>
+<!--GQ9-END-->
 </body>
 </html>
